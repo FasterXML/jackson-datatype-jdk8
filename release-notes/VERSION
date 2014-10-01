@@ -1,0 +1,18 @@
+Project: jackson-datatype-jdk7
+Version: 2.4.2 (15-Aug-2014)
+
+No changes since 2.4.0.
+
+------------------------------------------------------------------------
+=== History: ===
+------------------------------------------------------------------------
+
+2.4.1 (17-Jun-2014)
+
+No changes since 2.4.0.
+
+2.4.0 (03-Jun-2014)
+
+The First official version!
+
+#1: Add support for `java.nio.file.Path`
