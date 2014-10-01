@@ -33,10 +33,14 @@ JDK 8 data types.
     <osgi.import>com.fasterxml.jackson.core
 ,com.fasterxml.jackson.core.util
 ,com.fasterxml.jackson.databind
+,com.fasterxml.jackson.databind.deser
 ,com.fasterxml.jackson.databind.deser.std
+,com.fasterxml.jackson.databind.jsonFormatVisitors
+,com.fasterxml.jackson.databind.jsontype
 ,com.fasterxml.jackson.databind.module
 ,com.fasterxml.jackson.databind.ser
 ,com.fasterxml.jackson.databind.ser.std
+,com.fasterxml.jackson.databind.type
     </osgi.import>
     <osgi.export>${project.groupId}.jdk8.*;version=${project.version}
 </osgi.export>
