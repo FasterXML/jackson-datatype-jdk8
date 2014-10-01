@@ -28,7 +28,11 @@ class Jdk8Deserializers extends Deserializers.Base
             TypeDeserializer typeDeser = type.getTypeHandler();
             // [jackson-datatype-guava:Issue#42]: Polymorphic types need type deserializer
             if (typeDeser == null) {
-                typeDeser = config.findTypeDeserializer(refType);
+                try {
+                    typeDeser = config.findTypeDeserializer(refType);
+                } catch (NoSuchMethodError e) { // Running on Jackson 2.3.x, remove this ugly hack once we drop support
+                    typeDeser = null;
+                }
             }
             return new OptionalDeserializer(type, refType, typeDeser, valueDeser);
         }
