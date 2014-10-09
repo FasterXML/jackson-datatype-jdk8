@@ -1,12 +1,16 @@
 Project for [Jackson](https://github.com/FasterXML/jackson) module (jar)
 that adds supports for JDK datatypes included in version 8 which can not be directly
-supported by core databind due to baseline being JDK 6.
+supported by core databind due to baseline being JDK 6, excluding following:
+
+
+* New Date types are supported by [JSR-310 module](../../jackson-datatype-jsr310)
+* Support for parameter names is via [Parameter Names](../../jackson-module-parameter-names) module
 
 ## Status
 
 [![Build Status](https://fasterxml.ci.cloudbees.com/job/jackson-datatype-jdk8-master/badge/icon)](https://fasterxml.ci.cloudbees.com/job/jackson-datatype-jdk8-master/)
 
-This is a new module; first official version is not yet released!
+First public version is 2.4.3: module is still somewhat experimental but planned to be stable with 2.5.
 
 ## Usage
 
@@ -18,7 +22,7 @@ To use module on Maven-based projects, use following dependency:
 <dependency>
   <groupId>com.fasterxml.jackson.datatype</groupId>
   <artifactId>jackson-datatype-jdk8</artifactId>
-  <version>2.4.0</version>
+  <version>2.4.3</version>
 </dependency>    
 ```
 
