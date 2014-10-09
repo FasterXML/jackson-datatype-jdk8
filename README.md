@@ -3,8 +3,8 @@ that adds supports for JDK datatypes included in version 8 which can not be dire
 supported by core databind due to baseline being JDK 6, excluding following:
 
 
-* New Date types are supported by [JSR-310 module](../../jackson-datatype-jsr310)
-* Support for parameter names is via [Parameter Names](../../jackson-module-parameter-names) module
+* New Date types are supported by [JSR-310 module](../../../jackson-datatype-jsr310)
+* Support for parameter names is via [Parameter Names](../../../jackson-module-parameter-names) module
 
 ## Status
 
