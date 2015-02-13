@@ -17,6 +17,38 @@ public class TestOptionalSerializer extends ModuleTestBase
     private static final TypeReference<Optional<String>> OPTIONAL_STRING_TYPE = new TypeReference<Optional<String>>() {};
     private static final TypeReference<Optional<TestBean>> OPTIONAL_BEAN_TYPE = new TypeReference<Optional<TestBean>>() {};
 
+    public static class TestBean
+    {
+        public int foo;
+        public String bar;
+
+        @JsonCreator
+        public TestBean(@JsonProperty("foo") int foo, @JsonProperty("bar") String bar)
+        {
+            this.foo = foo;
+            this.bar = bar;
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj.getClass() != getClass()) {
+                return false;
+            }
+            TestBean castObj = (TestBean) obj;
+            return castObj.foo == foo && Objects.equals(castObj.bar, bar);
+        }
+
+        @Override
+        public int hashCode() {
+            return foo ^ bar.hashCode();
+        }
+    }
+
+    static class OptionalStringBean {
+        public Optional<String> value;
+    }
+    
     private ObjectMapper mapper;
 
     @Override
@@ -25,6 +57,12 @@ public class TestOptionalSerializer extends ModuleTestBase
         super.setUp();
         mapper = mapperWithModule();
     }
+    
+    /*
+    /**********************************************************
+    /* Test methods
+    /**********************************************************
+     */
 
     public void testStringAbsent() throws Exception
     {
@@ -77,36 +115,16 @@ public class TestOptionalSerializer extends ModuleTestBase
         assertEquals(bean, roundtrip(Optional.of(bean), OPTIONAL_BEAN_TYPE).get());
     }
 
+    // [issue#4]
+    public void testOptionalStringInBean() throws Exception
+    {
+        OptionalStringBean bean = mapper.readValue("{\"value\":\"xyz\"}", OptionalStringBean.class);
+        assertNotNull(bean.value);
+        assertEquals("xyz", bean.value.get());
+    }
+
     private <T> Optional<T> roundtrip(Optional<T> obj, TypeReference<Optional<T>> type) throws IOException
     {
         return mapper.readValue(mapper.writeValueAsBytes(obj), type);
-    }
-
-    public static class TestBean
-    {
-        public int foo;
-        public String bar;
-
-        @JsonCreator
-        public TestBean(@JsonProperty("foo") int foo, @JsonProperty("bar") String bar)
-        {
-            this.foo = foo;
-            this.bar = bar;
-        }
-
-        @Override
-        public boolean equals(Object obj)
-        {
-            if (obj.getClass() != getClass()) {
-                return false;
-            }
-            TestBean castObj = (TestBean) obj;
-            return castObj.foo == foo && Objects.equals(castObj.bar, bar);
-        }
-
-        @Override
-        public int hashCode() {
-            return foo ^ bar.hashCode();
-        }
     }
 }
