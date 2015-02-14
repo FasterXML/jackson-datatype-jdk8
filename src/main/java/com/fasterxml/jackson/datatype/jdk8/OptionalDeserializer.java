@@ -77,6 +77,8 @@ final class OptionalDeserializer
         if (deser == null) {
             deser = ctxt.findContextualValueDeserializer(_referenceType, property);
         } else { // otherwise directly assigned, probably not contextual yet:
+            // !!! TODO: in 2.6, use this instead:
+            // deser = ctxt.handleSecondaryContextualization(deser, property, _referenceType);
             deser = ctxt.handleSecondaryContextualization(deser, property);
         }
         if (typeDeser != null) {

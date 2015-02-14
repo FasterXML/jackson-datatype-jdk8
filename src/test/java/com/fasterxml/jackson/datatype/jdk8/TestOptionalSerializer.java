@@ -50,7 +50,7 @@ public class TestOptionalSerializer extends ModuleTestBase
         private final Optional<String> data;
  
         @JsonCreator
-        public Issue4Entity(Optional<String> data) {
+        public Issue4Entity(@JsonProperty("data") Optional<String> data) {
             this.data = Objects.requireNonNull(data, "data");
         }
  
@@ -140,12 +140,12 @@ public class TestOptionalSerializer extends ModuleTestBase
     public void testBeanWithCreator() throws Exception
     {
         final Issue4Entity emptyEntity = new Issue4Entity(Optional.empty());
-        final String entityString = mapper.writeValueAsString(emptyEntity);
-        final Issue4Entity deserialisedEntity = mapper.readValue(entityString, Issue4Entity.class);
+        final String json = mapper.writeValueAsString(emptyEntity);
+        
+        final Issue4Entity deserialisedEntity = mapper.readValue(json, Issue4Entity.class);
         if (!deserialisedEntity.equals(emptyEntity)) {
             throw new IOException("Entities not equal");
         }
-        throw new Error();
     }
     
     // [issue#4]
