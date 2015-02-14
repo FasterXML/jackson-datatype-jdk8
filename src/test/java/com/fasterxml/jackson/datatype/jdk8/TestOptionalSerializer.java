@@ -1,11 +1,7 @@
 package com.fasterxml.jackson.datatype.jdk8;
 
 import java.io.IOException;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,7 +44,32 @@ public class TestOptionalSerializer extends ModuleTestBase
     static class OptionalStringBean {
         public Optional<String> value;
     }
-    
+
+    // [issue#4]
+    static class Issue4Entity {
+        private final Optional<String> data;
+ 
+        @JsonCreator
+        public Issue4Entity(Optional<String> data) {
+            this.data = Objects.requireNonNull(data, "data");
+        }
+ 
+        @JsonProperty ("data")
+        public Optional<String> data() {
+            return data;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            Issue4Entity entity = (Issue4Entity) o;
+            return data.equals(entity.data);
+        }
+    }    
+
     private ObjectMapper mapper;
 
     @Override
@@ -57,7 +78,7 @@ public class TestOptionalSerializer extends ModuleTestBase
         super.setUp();
         mapper = mapperWithModule();
     }
-    
+
     /*
     /**********************************************************
     /* Test methods
@@ -116,6 +137,18 @@ public class TestOptionalSerializer extends ModuleTestBase
     }
 
     // [issue#4]
+    public void testBeanWithCreator() throws Exception
+    {
+        final Issue4Entity emptyEntity = new Issue4Entity(Optional.empty());
+        final String entityString = mapper.writeValueAsString(emptyEntity);
+        final Issue4Entity deserialisedEntity = mapper.readValue(entityString, Issue4Entity.class);
+        if (!deserialisedEntity.equals(emptyEntity)) {
+            throw new IOException("Entities not equal");
+        }
+        throw new Error();
+    }
+    
+    // [issue#4]
     public void testOptionalStringInBean() throws Exception
     {
         OptionalStringBean bean = mapper.readValue("{\"value\":\"xyz\"}", OptionalStringBean.class);
@@ -123,6 +156,12 @@ public class TestOptionalSerializer extends ModuleTestBase
         assertEquals("xyz", bean.value.get());
     }
 
+    /*
+    /**********************************************************
+    /* Helper methods
+    /**********************************************************
+     */
+    
     private <T> Optional<T> roundtrip(Optional<T> obj, TypeReference<Optional<T>> type) throws IOException
     {
         return mapper.readValue(mapper.writeValueAsBytes(obj), type);
