@@ -8,7 +8,7 @@ supported by core databind due to baseline being JDK 6, excluding following:
 
 ## Status
 
-[![Build Status](https://fasterxml.ci.cloudbees.com/job/jackson-datatype-jdk8-master/badge/icon)](https://fasterxml.ci.cloudbees.com/job/jackson-datatype-jdk8-master/)
+[![Build Status](https://travis-ci.org/FasterXML/jackson-datatype-jdk8.svg)](https://travis-ci.org/FasterXML/jackson-datatype-jdk8)
 
 First public version is 2.4.3: module is still somewhat experimental but planned to be stable with 2.5.
 
