@@ -56,6 +56,12 @@ final class OptionalSerializer
     }
 
     @Override
+    public boolean isEmpty(SerializerProvider provider, Optional<?> value) {
+        // TODO: change to chain the other way in 2.6+
+        return isEmpty(value);
+    }
+
+    @Override
     public JsonSerializer<?> createContextual(SerializerProvider provider,
             BeanProperty property) throws JsonMappingException
     {
