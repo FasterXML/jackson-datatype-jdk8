@@ -16,10 +16,12 @@ import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-final class OptionalSerializer
+public class OptionalSerializer
     extends StdSerializer<Optional<?>>
     implements ContextualSerializer
 {
+    private static final long serialVersionUID = 1L;
+
     /**
      * Declared type for the property being serialized with
      * this serializer instance.
@@ -52,13 +54,12 @@ final class OptionalSerializer
     // implemented since 2.3
     @Override
     public boolean isEmpty(Optional<?> value) {
-        return (value == null) || !value.isPresent();
+        return isEmpty(null, value);
     }
 
     @Override
     public boolean isEmpty(SerializerProvider provider, Optional<?> value) {
-        // TODO: change to chain the other way in 2.6+
-        return isEmpty(value);
+        return (value == null) || !value.isPresent();
     }
 
     @Override

@@ -4,13 +4,9 @@ import java.io.IOException;
 import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
+
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
@@ -77,9 +73,7 @@ final class OptionalDeserializer
         if (deser == null) {
             deser = ctxt.findContextualValueDeserializer(_referenceType, property);
         } else { // otherwise directly assigned, probably not contextual yet:
-            // !!! TODO: in 2.6, use this instead:
-            // deser = ctxt.handleSecondaryContextualization(deser, property, _referenceType);
-            deser = ctxt.handleSecondaryContextualization(deser, property);
+            deser = ctxt.handleSecondaryContextualization(deser, property, _referenceType);
         }
         if (typeDeser != null) {
             typeDeser = typeDeser.forProperty(property);
@@ -91,8 +85,7 @@ final class OptionalDeserializer
     }
 
     @Override
-    public Optional<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
-        JsonProcessingException
+    public Optional<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException
     {
         Object refd;
 
@@ -108,7 +101,7 @@ final class OptionalDeserializer
      */
     @Override
     public Optional<?> deserializeWithType(JsonParser jp, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
-        throws IOException, JsonProcessingException
+        throws IOException
     {
         final JsonToken t = jp.getCurrentToken();
         if (t == JsonToken.VALUE_NULL) {

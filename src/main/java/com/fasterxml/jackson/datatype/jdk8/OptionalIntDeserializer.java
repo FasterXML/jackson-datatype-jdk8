@@ -5,12 +5,18 @@ import java.util.OptionalInt;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
-final class OptionalIntDeserializer extends JsonDeserializer<OptionalInt>
+public class OptionalIntDeserializer extends StdDeserializer<OptionalInt>
 {
+    private static final long serialVersionUID = 1L;
+
     static final OptionalIntDeserializer INSTANCE = new OptionalIntDeserializer();
 
+    public OptionalIntDeserializer() {
+        super(OptionalInt.class);
+    }
+    
     @Override
     public OptionalInt getNullValue() {
         return OptionalInt.empty();
@@ -19,6 +25,6 @@ final class OptionalIntDeserializer extends JsonDeserializer<OptionalInt>
     @Override
     public OptionalInt deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException
     {
-        return OptionalInt.of(jp.getIntValue());
+        return OptionalInt.of(jp.getValueAsInt());
     }
 }
