@@ -25,7 +25,7 @@ final class OptionalLongSerializer extends StdSerializer<OptionalLong>
     
     @Override
     public void serialize(OptionalLong value, JsonGenerator jgen, SerializerProvider provider)
-    throws IOException
+        throws IOException
     {
         if (value.isPresent()) {
             jgen.writeNumber(value.getAsLong());

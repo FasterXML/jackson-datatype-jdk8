@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.datatype.jdk8;
 
 import java.io.IOException;
+import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -22,7 +23,7 @@ final class OptionalIntSerializer extends StdSerializer<OptionalInt>
     public boolean isEmpty(SerializerProvider provider, OptionalInt value) {
         return (value == null) || !value.isPresent();
     }
-    
+
     @Override
     public void serialize(OptionalInt value, JsonGenerator jgen, SerializerProvider provider)
         throws IOException

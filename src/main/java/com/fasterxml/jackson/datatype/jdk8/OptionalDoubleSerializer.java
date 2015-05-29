@@ -16,6 +16,11 @@ public class OptionalDoubleSerializer extends StdSerializer<OptionalDouble>
     public OptionalDoubleSerializer() {
         super(OptionalDouble.class);
     }
+
+    @Override
+    public boolean isEmpty(SerializerProvider provider, OptionalDouble value) {
+        return (value == null) || !value.isPresent();
+    }
     
     @Override
     public void serialize(OptionalDouble value, JsonGenerator jgen, SerializerProvider provider)

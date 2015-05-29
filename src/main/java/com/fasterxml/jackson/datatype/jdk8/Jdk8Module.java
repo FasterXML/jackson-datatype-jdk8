@@ -9,6 +9,8 @@ public class Jdk8Module extends Module
     public void setupModule(SetupContext context) {
         context.addSerializers(new Jdk8Serializers());
         context.addDeserializers(new Jdk8Deserializers());
+        // And to fully support Optionals, need to modify type info:
+        context.addTypeModifier(new Jdk8TypeModifier());
     }
 
     @Override
