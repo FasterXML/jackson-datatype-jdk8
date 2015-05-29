@@ -210,13 +210,13 @@ public class TestOptionalSerializer extends ModuleTestBase
         assertEquals(aposToQuotes("{}"),
                 mapper.writeValueAsString(new OptionalLongBean()));
     }
-    
+
     /*
     /**********************************************************
     /* Helper methods
     /**********************************************************
      */
-    
+
     private <T> Optional<T> roundtrip(Optional<T> obj, TypeReference<Optional<T>> type) throws IOException
     {
         return MAPPER.readValue(MAPPER.writeValueAsBytes(obj), type);

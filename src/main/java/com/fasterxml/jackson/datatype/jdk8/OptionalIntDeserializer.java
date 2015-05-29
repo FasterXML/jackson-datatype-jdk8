@@ -18,13 +18,18 @@ public class OptionalIntDeserializer extends StdDeserializer<OptionalInt>
     }
     
     @Override
+    @Deprecated // since 2.6
     public OptionalInt getNullValue() {
         return OptionalInt.empty();
     }
 
     @Override
-    public OptionalInt deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException
-    {
+    public OptionalInt getNullValue(DeserializationContext ctxt) {
+        return OptionalInt.empty();
+    }
+
+    @Override
+    public OptionalInt deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         return OptionalInt.of(jp.getValueAsInt());
     }
 }

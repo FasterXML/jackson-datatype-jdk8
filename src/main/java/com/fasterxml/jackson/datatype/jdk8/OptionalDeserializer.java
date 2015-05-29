@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -36,10 +35,17 @@ final class OptionalDeserializer
     }
 
     @Override
+    @Deprecated
     public JavaType getValueType() { return _fullType; }
 
     @Override
+    @Deprecated
     public Optional<?> getNullValue() { return Optional.empty(); }
+
+    @Override
+    public Optional<?> getNullValue(DeserializationContext ctxt) {
+        return Optional.empty();
+    }
 
     /**
      * Overridable fluent factory method used for creating contextual

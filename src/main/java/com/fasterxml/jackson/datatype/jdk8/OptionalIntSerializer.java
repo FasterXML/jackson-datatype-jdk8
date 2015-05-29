@@ -1,7 +1,6 @@
 package com.fasterxml.jackson.datatype.jdk8;
 
 import java.io.IOException;
-import java.util.OptionalDouble;
 import java.util.OptionalInt;
 
 import com.fasterxml.jackson.core.JsonGenerator;

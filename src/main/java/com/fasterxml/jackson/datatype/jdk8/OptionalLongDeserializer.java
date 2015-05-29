@@ -18,13 +18,18 @@ public class OptionalLongDeserializer extends StdDeserializer<OptionalLong>
     }
 
     @Override
+    @Deprecated
     public OptionalLong getNullValue() {
         return OptionalLong.empty();
     }
 
     @Override
-    public OptionalLong deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException
-    {
+    public OptionalLong getNullValue(DeserializationContext ctxt) {
+        return OptionalLong.empty();
+    }
+
+    @Override
+    public OptionalLong deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException {
         return OptionalLong.of(jp.getLongValue());
     }
 }

@@ -51,8 +51,8 @@ public class OptionalSerializer
         return new OptionalSerializer(_optionalType, ser);
     }
 
-    // implemented since 2.3
     @Override
+    @Deprecated
     public boolean isEmpty(Optional<?> value) {
         return isEmpty(null, value);
     }
