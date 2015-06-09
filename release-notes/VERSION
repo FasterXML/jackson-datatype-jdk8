@@ -8,6 +8,9 @@ Project: jackson-datatype-jdk8
 
 #8: JDK8 module should respect JsonInclude.Include.NON_ABSENT
  (reported by Emerson F)
+#11: Add `configureAbsentsAsNulls` config setting, for better compatibility
+ with Guava module
+ (contributed by Henning S)
 
 2.5.3 (24-Apr-2015)
 2.5.2 (29-Mar-2015)
