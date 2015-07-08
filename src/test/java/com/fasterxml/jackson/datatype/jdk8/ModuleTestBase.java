@@ -20,6 +20,15 @@ public abstract class ModuleTestBase extends junit.framework.TestCase
         return mapper;
     }
 
+    protected ObjectMapper mapperWithModule(boolean absentsAsNulls)
+    {
+        ObjectMapper mapper = new ObjectMapper();
+        Jdk8Module module = new Jdk8Module();
+        module.configureAbsentsAsNulls(absentsAsNulls);
+        mapper.registerModule(module);
+        return mapper;
+    }
+    
     /*
     /**********************************************************************
     /* Helper methods, setup
