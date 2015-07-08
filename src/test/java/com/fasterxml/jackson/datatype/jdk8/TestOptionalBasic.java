@@ -175,14 +175,6 @@ public class TestOptionalBasic extends ModuleTestBase {
 		assertEquals("{}", value);
 	}
 
-	public void failedTestSerOptNonDefault() throws Exception {
-		OptionalData data = new OptionalData();
-		data.myString = null;
-		String value = mapperWithModule().setSerializationInclusion(
-				JsonInclude.Include.NON_DEFAULT).writeValueAsString(data);
-		assertEquals("{}", value);
-	}
-
 	public void testWithTypingEnabled() throws Exception {
 		final ObjectMapper objectMapper = mapperWithModule();
 		// ENABLE TYPING
