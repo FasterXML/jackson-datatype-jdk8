@@ -1,14 +1,12 @@
-package com.fasterxml.jackson.failing;
+package com.fasterxml.jackson.datatype.jdk8;
 
 import java.util.Optional;
 
-import org.junit.Ignore;
-
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.ModuleTestBase;
 
-public class OptionalUnwrappedTest extends ModuleTestBase {
+public class OptionalUnwrappedTest extends ModuleTestBase
+{
 	static class Child {
 		public String name = "Bob";
 	}
@@ -27,8 +25,8 @@ public class OptionalUnwrappedTest extends ModuleTestBase {
 		public Optional<Child> child = Optional.of(new Child());
 	}
 
-	@Ignore
-	public void failedTestUntypedWithOptionalsNotNulls() throws Exception {
+	public void testUntypedWithOptionalsNotNulls() throws Exception
+	{
 		final ObjectMapper mapper = mapperWithModule(false);
 		String jsonExp = aposToQuotes("{'XX.name':'Bob'}");
 		String jsonAct = mapper.writeValueAsString(new OptionalParent());
