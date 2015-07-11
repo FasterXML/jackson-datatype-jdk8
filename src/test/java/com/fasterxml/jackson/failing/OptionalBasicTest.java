@@ -20,7 +20,24 @@ public class OptionalBasicTest extends ModuleTestBase
         data.myString = null;
         String value = mapperWithModule().setSerializationInclusion(
                 JsonInclude.Include.NON_DEFAULT).writeValueAsString(data);
-//                JsonInclude.Include.NON_ABSENT).writeValueAsString(data);
+        assertEquals("{}", value);
+    }
+
+    public void testSerOptNonEmpty() throws Exception
+    {
+        OptionalData data = new OptionalData();
+        data.myString = null;
+        String value = mapperWithModule().setSerializationInclusion(
+                JsonInclude.Include.NON_EMPTY).writeValueAsString(data);
+        assertEquals("{}", value);
+    }
+
+    public void testSerOptNonAbsent() throws Exception
+    {
+        OptionalData data = new OptionalData();
+        data.myString = null;
+        String value = mapperWithModule().setSerializationInclusion(
+                JsonInclude.Include.NON_ABSENT).writeValueAsString(data);
         assertEquals("{}", value);
     }
 }
