@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.fasterxml.jackson</groupId>
     <artifactId>jackson-parent</artifactId>
-    <version>2.5.1</version>
+    <version>2.6.1</version>
   </parent>
   <groupId>com.fasterxml.jackson.datatype</groupId>
   <artifactId>jackson-datatype-jdk8</artifactId>
@@ -21,7 +21,7 @@ JDK 8 data types.
     <tag>HEAD</tag>
   </scm>
   <properties>
-    <version.jackson>2.6.0-rc3</version.jackson>
+    <version.jackson>2.6.0-rc4</version.jackson>
     <!-- explicitly target JDK 8 -->
     <javac.src.version>1.8</javac.src.version>
     <javac.target.version>1.8</javac.target.version>
