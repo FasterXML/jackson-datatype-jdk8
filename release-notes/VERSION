@@ -4,7 +4,7 @@ Project: jackson-datatype-jdk8
 === Releases ===
 ------------------------------------------------------------------------
 
-2.6.0 (not yet released)
+2.6.0 (19-Jul-2015)
 
 #8: JDK8 module should respect JsonInclude.Include.NON_ABSENT
  (reported by Emerson F)
