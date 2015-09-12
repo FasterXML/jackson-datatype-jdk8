@@ -10,7 +10,7 @@ supported by core databind due to baseline being JDK 6, excluding following:
 
 [![Build Status](https://travis-ci.org/FasterXML/jackson-datatype-jdk8.svg)](https://travis-ci.org/FasterXML/jackson-datatype-jdk8)
 
-First public version is 2.4.3: module is still somewhat experimental but planned to be stable with 2.5.
+As of Jackson 2.5, this module is stable and considered production ready.
 
 ## Usage
 
@@ -22,7 +22,7 @@ To use module on Maven-based projects, use following dependency:
 <dependency>
   <groupId>com.fasterxml.jackson.datatype</groupId>
   <artifactId>jackson-datatype-jdk8</artifactId>
-  <version>2.4.3</version>
+  <version>2.6.1</version>
 </dependency>    
 ```
 
