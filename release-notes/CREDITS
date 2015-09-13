@@ -1,0 +1,16 @@
+Here are people who have contributed to the development of Jackson JSON processor
+JDK8 datatype component, version 2.x
+(version numbers in brackets indicate release in which the problem was fixed)
+
+Tatu Saloranta (tatu.saloranta@iki.fi): author
+
+Henning Schmiedehausen (hgschmie@github)
+
+* Reported #11: Add `configureAbsentsAsNulls` config setting, for better compatibility
+  with Guava module
+ (2.6.0)
+
+Jerome Loisel (jloisel@github)
+
+* Reported #14: Missing `@type` when serializing Optional<Interface>
+ (2.6.2)

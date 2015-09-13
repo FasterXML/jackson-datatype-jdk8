@@ -4,6 +4,11 @@ Project: jackson-datatype-jdk8
 === Releases ===
 ------------------------------------------------------------------------
 
+2.6.2 (not yet released)
+
+#14: Missing `@type` when serializing Optional<Interface>
+ (reported by Jerome L, jloisel@github)
+
 2.6.1 (09-Aug-2015)
 
 No changes since 2.6.0

@@ -90,9 +90,9 @@ public class OptionalSerializer
             if (realType &&
                     (provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
                     || _referredType.isFinal())) {
-                return withResolved(property,
-                        provider.findPrimaryPropertySerializer(_referredType, property),
-                        _unwrapper);
+                ser = _findSerializer(provider, _referredType, _property);
+                
+                return withResolved(property, ser, _unwrapper);
             }
         } else {
             // not sure if/when this should occur but proper way to deal would be:
@@ -128,7 +128,7 @@ public class OptionalSerializer
             Object value = opt.get();
             JsonSerializer<Object> ser = _valueSerializer;
             if (ser == null) {
-                ser = _findSerializer(provider, value.getClass());
+                ser = _findCachedSerializer(provider, value.getClass());
             }
             ser.serialize(value, gen, provider);
         } else {
@@ -145,7 +145,7 @@ public class OptionalSerializer
             Object value = opt.get();
             JsonSerializer<Object> ser = _valueSerializer;
             if (ser == null) {
-                ser = _findSerializer(provider, value.getClass());
+                ser = _findCachedSerializer(provider, value.getClass());
             }
             ser.serializeWithType(value, gen, provider, typeSer);
         } else {
@@ -170,6 +170,7 @@ public class OptionalSerializer
         return (value == null) || !value.isPresent();
     }
 
+    @Override
     public boolean isUnwrappingSerializer() {
         return (_unwrapper != null);
     }
@@ -185,7 +186,7 @@ public class OptionalSerializer
     {
         JsonSerializer<?> ser = _valueSerializer;
         if (ser == null) {
-            ser = _findSerializer(visitor.getProvider(), _referredType.getRawClass());
+            ser = _findSerializer(visitor.getProvider(), _referredType, _property);
         }
         ser.acceptJsonFormatVisitor(visitor, _referredType);
     }
@@ -208,17 +209,31 @@ public class OptionalSerializer
      * Helper method that encapsulates logic of retrieving and caching required
      * serializer.
      */
-    protected final JsonSerializer<Object> _findSerializer(SerializerProvider provider, Class<?> type)
-        throws JsonMappingException
+    private final JsonSerializer<Object> _findCachedSerializer(SerializerProvider provider,
+            Class<?> type) throws JsonMappingException
     {
         JsonSerializer<Object> ser = _dynamicSerializers.serializerFor(type);
         if (ser == null) {
-            ser = provider.findPrimaryPropertySerializer(type, _property);
+            ser = _findSerializer(provider, type, _property);
             if (_unwrapper != null) {
                 ser = ser.unwrappingSerializer(_unwrapper);
             }
             _dynamicSerializers = _dynamicSerializers.newWith(type, ser);
         }
         return ser;
+    }
+
+    private final JsonSerializer<Object> _findSerializer(SerializerProvider provider,
+            Class<?> type, BeanProperty prop) throws JsonMappingException
+    {
+//        return provider.findPrimaryPropertySerializer(type, prop);
+        return provider.findTypedValueSerializer(type, true, prop);
+    }
+
+    private final JsonSerializer<Object> _findSerializer(SerializerProvider provider,
+        JavaType type, BeanProperty prop) throws JsonMappingException
+    {
+//      return provider.findPrimaryPropertySerializer(type, prop);
+      return provider.findTypedValueSerializer(type, true, prop);
     }
 }
