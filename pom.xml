@@ -9,7 +9,7 @@
   <groupId>com.fasterxml.jackson.datatype</groupId>
   <artifactId>jackson-datatype-jdk8</artifactId>
   <name>Jackson-datatype-jdk8</name>
-  <version>2.6.2-SNAPSHOT</version>
+  <version>2.6.2</version>
   <packaging>bundle</packaging>
   <description>Add-on module for Jackson (http://jackson.codehaus.org) to support
 JDK 8 data types.
@@ -18,7 +18,7 @@ JDK 8 data types.
     <connection>scm:git:git@github.com:FasterXML/jackson-datatype-jdk8.git</connection>
     <developerConnection>scm:git:git@github.com:FasterXML/jackson-datatype-jdk8.git</developerConnection>
     <url>http://github.com/FasterXML/jackson-datatype-jdk8</url>
-    <tag>HEAD</tag>
+    <tag>jackson-datatype-jdk8-2.6.2</tag>
   </scm>
   <properties>
     <version.jackson.core>2.6.2</version.jackson.core>
