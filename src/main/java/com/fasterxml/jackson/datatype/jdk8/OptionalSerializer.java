@@ -167,7 +167,11 @@ public class OptionalSerializer
 
     @Override
     public boolean isEmpty(SerializerProvider provider, Optional<?> value) {
-        return (value == null) || !value.isPresent();
+        return (value == null) || !value.isPresent() || isValueEmpty(value.get());
+    }
+
+    protected boolean isValueEmpty(Object value) {
+        return (value instanceof String) && ((String)value).isEmpty();
     }
 
     @Override
