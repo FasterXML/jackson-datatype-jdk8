@@ -83,26 +83,28 @@ public class OptionalSerializer
     {
         JsonSerializer<?> ser = _valueSerializer;
         if (ser == null) {
-            // we'll have type parameter available due to TypeModifier making sure it is, so:
-            boolean realType = !_referredType.hasRawClass(Object.class);
-            // Can only assign serializer statically if the declared type is final,
-            // or if we are to use static typing (and type is not "untyped")
-            if (realType &&
-                    (provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
-                    || _referredType.isFinal())) {
-                ser = _findSerializer(provider, _referredType, _property);
-                
-                return withResolved(property, ser, _unwrapper);
+            // A few conditions needed to be able to fetch serializer here:
+            if (_useStatic(provider, property, _referredType)) {
+                ser = _findSerializer(provider, _referredType, property);
             }
         } else {
-            // not sure if/when this should occur but proper way to deal would be:
-            return withResolved(property,
-                    provider.handlePrimaryContextualization(ser, property),
-                    _unwrapper);
+            ser = provider.handlePrimaryContextualization(ser, property);
         }
-        return this;
+        return withResolved(property, ser, _unwrapper);
     }
 
+    protected boolean _useStatic(SerializerProvider provider, BeanProperty property,
+            JavaType referredType)
+    {
+        // First: no serializer for `Object.class`, must be dynamic
+        if (_referredType.hasRawClass(Object.class)) {
+            return false;
+        }
+        // Second: 
+        return provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
+                || _referredType.isFinal();
+    }
+    
     @Override
     public JsonSerializer<Optional<?>> unwrappingSerializer(NameTransformer transformer) {
         JsonSerializer<Object> ser = _valueSerializer;

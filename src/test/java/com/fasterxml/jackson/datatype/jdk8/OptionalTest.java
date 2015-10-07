@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.*;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class OptionalTest extends ModuleTestBase
@@ -50,7 +48,7 @@ public class OptionalTest extends ModuleTestBase
             value = Optional.ofNullable(str);
         }
     }
-
+    
     static class OptionalLongBean {
         public OptionalLong value;
 
@@ -60,7 +58,7 @@ public class OptionalTest extends ModuleTestBase
         }
     }
     
-    // [issue#4]
+    // [datatype-jdk8#4]
     static class Issue4Entity {
         private final Optional<String> data;
  
@@ -171,7 +169,7 @@ public class OptionalTest extends ModuleTestBase
         assertEquals("xyz", bean.value.get());
     }
 
-    // To support [issue#8]
+    // To support [datatype-jdk8#8]
     public void testExcludeIfOptionalAbsent() throws Exception
     {
         ObjectMapper mapper = mapperWithModule()
