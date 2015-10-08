@@ -16,12 +16,6 @@ public class OptionalIntDeserializer extends StdDeserializer<OptionalInt>
     public OptionalIntDeserializer() {
         super(OptionalInt.class);
     }
-    
-    @Override
-    @Deprecated // since 2.6
-    public OptionalInt getNullValue() {
-        return OptionalInt.empty();
-    }
 
     @Override
     public OptionalInt getNullValue(DeserializationContext ctxt) {

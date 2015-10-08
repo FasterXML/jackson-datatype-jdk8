@@ -4,6 +4,8 @@ Project: jackson-datatype-jdk8
 === Releases ===
 ------------------------------------------------------------------------
 
+2.7.0 (not yet released)
+
 2.6.3 (not yet released)
 
 #13: Allow use of `@JsonDeserialize(contentAs=XXX)` with `Optional`

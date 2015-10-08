@@ -36,25 +36,10 @@ final class OptionalDeserializer
     }
 
     @Override
-    @Deprecated
-    public JavaType getValueType() { return _fullType; }
-
-    @Override
-    @Deprecated
-    public Optional<?> getNullValue() { return Optional.empty(); }
-
-    @Override
     public Optional<?> getNullValue(DeserializationContext ctxt) {
         return Optional.empty();
     }
 
-    @Deprecated // since 2.6.3; internal, remove from 2.7
-    protected OptionalDeserializer withResolved(
-            TypeDeserializer typeDeser, JsonDeserializer<?> valueDeser) {
-        return withResolved(_referenceType, typeDeser, valueDeser);
-    }
-            
-    
     /**
      * Overridable fluent factory method used for creating contextual
      * instances.

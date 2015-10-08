@@ -18,12 +18,6 @@ final class OptionalDoubleDeserializer extends StdDeserializer<OptionalDouble>
     }
 
     @Override
-    @Deprecated
-    public OptionalDouble getNullValue() {
-        return OptionalDouble.empty();
-    }
-
-    @Override
     public OptionalDouble getNullValue(DeserializationContext ctxt) {
         return OptionalDouble.empty();
     }

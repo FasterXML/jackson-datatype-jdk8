@@ -181,12 +181,6 @@ public class OptionalSerializer
      */
 
     @Override
-    @Deprecated
-    public boolean isEmpty(Optional<?> value) {
-        return isEmpty(null, value);
-    }
-
-    @Override
     public boolean isEmpty(SerializerProvider provider, Optional<?> value) {
         return (value == null) || !value.isPresent();
     }

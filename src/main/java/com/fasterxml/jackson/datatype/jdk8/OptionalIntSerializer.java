@@ -24,13 +24,13 @@ final class OptionalIntSerializer extends StdSerializer<OptionalInt>
     }
 
     @Override
-    public void serialize(OptionalInt value, JsonGenerator jgen, SerializerProvider provider)
+    public void serialize(OptionalInt value, JsonGenerator gen, SerializerProvider provider)
         throws IOException
     {
         if (value.isPresent()) {
-            jgen.writeNumber(value.getAsInt());
+            gen.writeNumber(value.getAsInt());
         } else {
-            jgen.writeNull();
+            gen.writeNull();
         }
     }
 }
