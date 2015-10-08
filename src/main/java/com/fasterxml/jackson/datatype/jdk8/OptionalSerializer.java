@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
@@ -100,11 +102,28 @@ public class OptionalSerializer
         if (_referredType.hasRawClass(Object.class)) {
             return false;
         }
-        // Second: 
-        return provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
-                || _referredType.isFinal();
+        // but if type is final, might as well fetch
+        if (_referredType.isFinal()) { // or should we allow annotation override? (only if requested...)
+            return true;
+        }
+        // if neither, maybe explicit annotation?
+        AnnotationIntrospector intr = provider.getAnnotationIntrospector();
+        if ((intr != null) && (property != null)) {
+            Annotated ann = property.getMember();
+            if (ann != null) {
+                JsonSerialize.Typing t = intr.findSerializationTyping(property.getMember());
+                if (t == JsonSerialize.Typing.STATIC) {
+                    return true;
+                }
+                if (t == JsonSerialize.Typing.DYNAMIC) {
+                    return false;
+                }
+            }
+        }
+        // and finally, may be forced by global static typing (unlikely...)
+        return provider.isEnabled(MapperFeature.USE_STATIC_TYPING);
     }
-    
+
     @Override
     public JsonSerializer<Optional<?>> unwrappingSerializer(NameTransformer transformer) {
         JsonSerializer<Object> ser = _valueSerializer;
