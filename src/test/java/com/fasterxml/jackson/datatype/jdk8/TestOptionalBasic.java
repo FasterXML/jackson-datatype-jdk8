@@ -40,7 +40,13 @@ public class TestOptionalBasic extends ModuleTestBase {
         }
     }
 
-	public void testOptionalTypeResolution() throws Exception {
+    /*
+    /**********************************************************
+    /* Test methods
+    /**********************************************************
+     */
+    
+    public void testOptionalTypeResolution() throws Exception {
 		// With 2.6, we need to recognize it as ReferenceType
 		JavaType t = MAPPER.constructType(Optional.class);
 		assertNotNull(t);

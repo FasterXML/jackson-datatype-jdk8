@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 
 final class OptionalDeserializer
@@ -47,15 +48,25 @@ final class OptionalDeserializer
         return Optional.empty();
     }
 
+    @Deprecated // since 2.6.3; internal, remove from 2.7
+    protected OptionalDeserializer withResolved(
+            TypeDeserializer typeDeser, JsonDeserializer<?> valueDeser) {
+        return withResolved(_referenceType, typeDeser, valueDeser);
+    }
+            
+    
     /**
      * Overridable fluent factory method used for creating contextual
      * instances.
      */
-    protected OptionalDeserializer withResolved(
+    protected OptionalDeserializer withResolved(JavaType refType,
             TypeDeserializer typeDeser, JsonDeserializer<?> valueDeser)
     {
-        return new OptionalDeserializer(_fullType, _referenceType,
-                typeDeser, valueDeser);
+        if ((refType == _referenceType)
+                && (valueDeser == _valueDeserializer) && (typeDeser == _valueTypeDeserializer)) {
+            return this;
+        }
+        return new OptionalDeserializer(_fullType, refType, typeDeser, valueDeser);
     }
 
     /*
@@ -75,30 +86,42 @@ final class OptionalDeserializer
     {
         JsonDeserializer<?> deser = _valueDeserializer;
         TypeDeserializer typeDeser = _valueTypeDeserializer;
+        JavaType refType = _referenceType;
 
         if (deser == null) {
-            deser = ctxt.findContextualValueDeserializer(_referenceType, property);
+            // 08-Oct-2015, tatu: As per [datatype-jdk8#13], need to use type
+            //    override, if any
+            if (property != null) {
+                AnnotationIntrospector intr = ctxt.getAnnotationIntrospector();
+                AnnotatedMember member = property.getMember();
+                if ((intr != null)  && (member != null)) {
+                    Class<?> cc = intr.findDeserializationContentType(member, refType);
+                    if ((cc != null) && !refType.hasRawClass(cc)) {
+                        // 08-Oct-2015, tatu: One open question is whether we should also
+                        //   modify "full type"; seems like it's not needed quite yet
+                        refType = refType.narrowBy(cc);
+                    }
+                }
+            }
+            deser = ctxt.findContextualValueDeserializer(refType, property);
         } else { // otherwise directly assigned, probably not contextual yet:
-            deser = ctxt.handleSecondaryContextualization(deser, property, _referenceType);
+            deser = ctxt.handleSecondaryContextualization(deser, property, refType);
         }
         if (typeDeser != null) {
             typeDeser = typeDeser.forProperty(property);
         }
-        if (deser == _valueDeserializer && typeDeser == _valueTypeDeserializer) {
-            return this;
-        }
-        return withResolved(typeDeser, deser);
+        return withResolved(refType, typeDeser, deser);
     }
 
     @Override
-    public Optional<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException
+    public Optional<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException
     {
         Object refd;
 
         if (_valueTypeDeserializer == null) {
-            refd = _valueDeserializer.deserialize(jp, ctxt);
+            refd = _valueDeserializer.deserialize(p, ctxt);
         } else {
-            refd = _valueDeserializer.deserializeWithType(jp, ctxt, _valueTypeDeserializer);
+            refd = _valueDeserializer.deserializeWithType(p, ctxt, _valueTypeDeserializer);
         }
         return Optional.of(refd);
     }
@@ -106,12 +129,12 @@ final class OptionalDeserializer
     /* NOTE: usually should not need this method... but for some reason, it is needed here.
      */
     @Override
-    public Optional<?> deserializeWithType(JsonParser jp, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
+    public Optional<?> deserializeWithType(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
         throws IOException
     {
-        final JsonToken t = jp.getCurrentToken();
+        final JsonToken t = p.getCurrentToken();
         if (t == JsonToken.VALUE_NULL) {
-            return getNullValue();
+            return getNullValue(ctxt);
         }
         // 03-Nov-2013, tatu: This gets rather tricky with "natural" types
         //   (String, Integer, Boolean), which do NOT include type information.
@@ -119,9 +142,9 @@ final class OptionalDeserializer
         //   is `Optional`, so special handling is not invoked; instead, need
         //   to do a work-around here.
         if (t != null && t.isScalarValue()) {
-            return deserialize(jp, ctxt);
+            return deserialize(p, ctxt);
         }
         // with type deserializer to use here? Looks like we get passed same one?
-        return Optional.of(typeDeserializer.deserializeTypedFromAny(jp, ctxt));
+        return Optional.of(typeDeserializer.deserializeTypedFromAny(p, ctxt));
     }
 }

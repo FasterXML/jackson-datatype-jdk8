@@ -247,14 +247,12 @@ public class OptionalSerializer
     private final JsonSerializer<Object> _findSerializer(SerializerProvider provider,
             Class<?> type, BeanProperty prop) throws JsonMappingException
     {
-//        return provider.findPrimaryPropertySerializer(type, prop);
         return provider.findTypedValueSerializer(type, true, prop);
     }
 
     private final JsonSerializer<Object> _findSerializer(SerializerProvider provider,
         JavaType type, BeanProperty prop) throws JsonMappingException
     {
-//      return provider.findPrimaryPropertySerializer(type, prop);
-      return provider.findTypedValueSerializer(type, true, prop);
+        return provider.findTypedValueSerializer(type, true, prop);
     }
 }
