@@ -8,7 +8,9 @@ import com.fasterxml.jackson.databind.util.NameTransformer;
 
 import java.util.Optional;
 
-public class Jdk8OptionalBeanPropertyWriter extends BeanPropertyWriter {
+public class Jdk8OptionalBeanPropertyWriter extends BeanPropertyWriter
+{
+    private static final long serialVersionUID = 1L;
 
     protected Jdk8OptionalBeanPropertyWriter(BeanPropertyWriter base) {
         super(base);
@@ -18,18 +20,7 @@ public class Jdk8OptionalBeanPropertyWriter extends BeanPropertyWriter {
         super(base, newName);
     }
 
-    // !!! TODO: in 2.7, no need to override
     @Override
-    public BeanPropertyWriter rename(NameTransformer transformer) {
-        String newName = transformer.transform(_name.getValue());
-        if (newName.equals(_name.toString())) {
-            return this;
-        }
-        return _new(PropertyName.construct(newName));
-    }
-
-    // NOTE: 
-//    @Override
     protected BeanPropertyWriter _new(PropertyName newName) {
         return new Jdk8OptionalBeanPropertyWriter(this, newName);
     }

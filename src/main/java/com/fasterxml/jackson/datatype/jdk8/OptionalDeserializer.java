@@ -5,10 +5,10 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 
 final class OptionalDeserializer
@@ -74,20 +74,6 @@ final class OptionalDeserializer
         JavaType refType = _referenceType;
 
         if (deser == null) {
-            // 08-Oct-2015, tatu: As per [datatype-jdk8#13], need to use type
-            //    override, if any
-            if (property != null) {
-                AnnotationIntrospector intr = ctxt.getAnnotationIntrospector();
-                AnnotatedMember member = property.getMember();
-                if ((intr != null)  && (member != null)) {
-                    Class<?> cc = intr.findDeserializationContentType(member, refType);
-                    if ((cc != null) && !refType.hasRawClass(cc)) {
-                        // 08-Oct-2015, tatu: One open question is whether we should also
-                        //   modify "full type"; seems like it's not needed quite yet
-                        refType = refType.narrowBy(cc);
-                    }
-                }
-            }
             deser = ctxt.findContextualValueDeserializer(refType, property);
         } else { // otherwise directly assigned, probably not contextual yet:
             deser = ctxt.handleSecondaryContextualization(deser, property, refType);
