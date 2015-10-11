@@ -22,8 +22,13 @@ class Jdk8Deserializers extends Deserializers.Base
     {
         final Class<?> raw = type.getRawClass();
         if (raw == Optional.class) {
-            JavaType[] types = config.getTypeFactory().findTypeParameters(type, Optional.class);
-            JavaType refType = (types == null) ? TypeFactory.unknownType() : types[0];
+            JavaType refType = type.getReferencedType();
+            
+            // 10-Oct-2015, tatu: Really should not occur. But... let's be paranoid
+            if (refType == null) {
+                // error or placeholder? Placeholder for now:
+                refType = TypeFactory.unknownType();
+            }
             JsonDeserializer<?> valueDeser = type.getValueHandler();
             TypeDeserializer typeDeser = type.getTypeHandler();
             // [jackson-datatype-guava:Issue#42]: Polymorphic types need type deserializer
