@@ -208,6 +208,13 @@ public class OptionalTest extends ModuleTestBase
                 mapper.writeValueAsString(new OptionalLongBean()));
     }
 
+    public void testExcludeIfOptionalStringIsBlank() throws Exception {
+        ObjectMapper mapper = mapperWithModule()
+                .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        assertEquals(aposToQuotes("{}"),
+                mapper.writeValueAsString(new OptionalStringBean("")));
+    }
+
     /*
     /**********************************************************
     /* Helper methods
