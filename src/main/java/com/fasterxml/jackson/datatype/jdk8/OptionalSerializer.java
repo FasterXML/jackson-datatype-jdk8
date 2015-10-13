@@ -3,7 +3,10 @@ package com.fasterxml.jackson.datatype.jdk8;
 import java.io.IOException;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import com.fasterxml.jackson.core.JsonGenerator;
+
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.introspect.Annotated;
@@ -36,13 +39,27 @@ public class OptionalSerializer
     protected final NameTransformer _unwrapper;
 
     /**
+     * Further guidance on serialization-inclusion (or not), regarding
+     * contained value (if any).
+     *
+     * @since 2.7
+     */
+    protected final JsonInclude.Include _contentInclusion;
+    
+    /**
      * If element type can not be statically determined, mapping from
      * runtime type to serializer is handled using this object
      *
      * @since 2.6
      */
     protected transient PropertySerializerMap _dynamicSerializers;
-    
+
+    /*
+    /**********************************************************
+    /* Constructors, factory methods
+    /**********************************************************
+     */
+
     public OptionalSerializer(JavaType type) {
         this(type, null);
     }
@@ -55,12 +72,14 @@ public class OptionalSerializer
         _property = null;
         _valueSerializer = (JsonSerializer<Object>) valueSer;
         _unwrapper = null;
+        _contentInclusion = null;
         _dynamicSerializers = PropertySerializerMap.emptyForProperties();
     }
 
     @SuppressWarnings("unchecked")
     protected OptionalSerializer(OptionalSerializer base,
-            BeanProperty property, JsonSerializer<?> valueSer, NameTransformer unwrapper)
+            BeanProperty property, JsonSerializer<?> valueSer, NameTransformer unwrapper,
+            JsonInclude.Include contentIncl)
     {
         super(base);
         _referredType = base._referredType;
@@ -68,17 +87,42 @@ public class OptionalSerializer
         _property = property;
         _valueSerializer = (JsonSerializer<Object>) valueSer;
         _unwrapper = unwrapper;
+        if ((contentIncl == JsonInclude.Include.USE_DEFAULTS)
+                || (contentIncl == JsonInclude.Include.ALWAYS)) {
+            _contentInclusion = null;
+        } else {
+            _contentInclusion = contentIncl;
+        }
     }
 
+    @Override
+    public JsonSerializer<Optional<?>> unwrappingSerializer(NameTransformer transformer) {
+        JsonSerializer<Object> ser = _valueSerializer;
+        if (ser != null) {
+            ser = ser.unwrappingSerializer(transformer);
+        }
+        NameTransformer unwrapper = (_unwrapper == null) ? transformer
+                : NameTransformer.chainedTransformer(transformer, _unwrapper);
+        return withResolved(_property, ser, unwrapper, _contentInclusion);
+    }
+    
     protected OptionalSerializer withResolved(BeanProperty prop,
-            JsonSerializer<?> ser, NameTransformer unwrapper)
+            JsonSerializer<?> ser, NameTransformer unwrapper,
+            JsonInclude.Include contentIncl)
     {
-        if ((_property == prop) && (_valueSerializer == ser) && (_unwrapper == unwrapper)) {
+        if ((_property == prop) && (contentIncl == _contentInclusion)
+                && (_valueSerializer == ser) && (_unwrapper == unwrapper)) {
             return this;
         }
-        return new OptionalSerializer(this, prop, ser, unwrapper);
+        return new OptionalSerializer(this, prop, ser, unwrapper, contentIncl);
     }
 
+    /*
+    /**********************************************************
+    /* Contextualization (support for property annotations)
+    /**********************************************************
+     */
+    
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider provider,
             BeanProperty property) throws JsonMappingException
@@ -92,18 +136,36 @@ public class OptionalSerializer
         } else {
             ser = provider.handlePrimaryContextualization(ser, property);
         }
-        return withResolved(property, ser, _unwrapper);
+        // Also: may want to have more refined exclusion based on referenced value
+        JsonInclude.Include contentIncl = _contentInclusion;
+        if (property != null) {
+            AnnotationIntrospector intr = provider.getAnnotationIntrospector();
+            if (intr != null) {
+                JsonInclude.Value incl = intr.findPropertyInclusion(property.getMember());
+                if (incl != null) {
+                    JsonInclude.Include newIncl = incl.getContentInclusion();
+                    if ((newIncl != contentIncl) && (newIncl != JsonInclude.Include.NON_DEFAULT)) {
+                        contentIncl = newIncl;
+                    }
+                }
+            }
+        }
+        return withResolved(property, ser, _unwrapper, contentIncl);
     }
 
     protected boolean _useStatic(SerializerProvider provider, BeanProperty property,
             JavaType referredType)
     {
         // First: no serializer for `Object.class`, must be dynamic
-        if (_referredType.hasRawClass(Object.class)) {
+        if (_referredType.isJavaLangObject()) {
             return false;
         }
         // but if type is final, might as well fetch
         if (_referredType.isFinal()) { // or should we allow annotation override? (only if requested...)
+            return true;
+        }
+        // also: if indicated by typing, should be considered static
+        if (_referredType.useStaticType()) {
             return true;
         }
         // if neither, maybe explicit annotation?
@@ -124,15 +186,36 @@ public class OptionalSerializer
         return provider.isEnabled(MapperFeature.USE_STATIC_TYPING);
     }
 
+    /*
+    /**********************************************************
+    /* API overrides
+    /**********************************************************
+     */
+
     @Override
-    public JsonSerializer<Optional<?>> unwrappingSerializer(NameTransformer transformer) {
-        JsonSerializer<Object> ser = _valueSerializer;
-        if (ser != null) {
-            ser = ser.unwrappingSerializer(transformer);
+    public boolean isEmpty(SerializerProvider provider, Optional<?> value)
+    {
+        if ((value == null) || !value.isPresent()) {
+            return true;
         }
-        NameTransformer unwrapper = (_unwrapper == null) ? transformer
-                : NameTransformer.chainedTransformer(transformer, _unwrapper);
-        return withResolved(_property, ser, unwrapper);
+        if (_contentInclusion == null) {
+            return false;
+        }
+        Object contents = value.get();
+        JsonSerializer<Object> ser = _valueSerializer;
+        if (ser == null) {
+            try {
+                ser = _findCachedSerializer(provider, value.getClass());
+            } catch (JsonMappingException e) { // nasty but necessary
+                throw new RuntimeJsonMappingException(e);
+            }
+        }
+        return ser.isEmpty(provider, contents);
+    }
+
+    @Override
+    public boolean isUnwrappingSerializer() {
+        return (_unwrapper != null);
     }
 
     /*
@@ -172,22 +255,6 @@ public class OptionalSerializer
         } else {
             provider.defaultSerializeNull(gen);
         }
-    }
-
-    /*
-    /**********************************************************
-    /* API overrides
-    /**********************************************************
-     */
-
-    @Override
-    public boolean isEmpty(SerializerProvider provider, Optional<?> value) {
-        return (value == null) || !value.isPresent();
-    }
-
-    @Override
-    public boolean isUnwrappingSerializer() {
-        return (_unwrapper != null);
     }
 
     /*

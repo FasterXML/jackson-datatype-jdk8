@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.failing;
+package com.fasterxml.jackson.datatype.jdk8;
 
 import java.util.Optional;
 
@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.datatype.jdk8.ModuleTestBase;
 
-public class OptionalBasicTest extends ModuleTestBase
+public class OptionalnclusionTest extends ModuleTestBase
 {
     @JsonAutoDetect(fieldVisibility=Visibility.ANY)
     public static final class OptionalData {
@@ -20,7 +20,7 @@ public class OptionalBasicTest extends ModuleTestBase
 
     // for [datatype-jdk8#18]
     static class OptionalNonEmptyStringBean {
-        @JsonInclude(Include.NON_EMPTY)
+        @JsonInclude(value=Include.NON_EMPTY, content=Include.NON_EMPTY)
         public Optional<String> value;
 
         public OptionalNonEmptyStringBean() { }
@@ -30,15 +30,6 @@ public class OptionalBasicTest extends ModuleTestBase
     }
 
     private final ObjectMapper MAPPER = mapperWithModule();
-
-    public void testSerOptNonDefault() throws Exception
-    {
-        OptionalData data = new OptionalData();
-        data.myString = null;
-        String value = mapperWithModule().setSerializationInclusion(
-                JsonInclude.Include.NON_DEFAULT).writeValueAsString(data);
-        assertEquals("{}", value);
-    }
 
     public void testSerOptNonEmpty() throws Exception
     {

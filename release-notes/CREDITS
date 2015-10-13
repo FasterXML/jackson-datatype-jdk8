@@ -14,3 +14,8 @@ Jerome Loisel (jloisel@github)
 
 * Reported #14: Missing `@type` when serializing Optional<Interface>
  (2.6.2)
+
+James Lorenzen (jlorenzen@github)
+
+* Requested #18: Allow use of `@JsonInclude(content=Include.NON_EMPTY)` with `Optional<>`
+ (2.7.0)

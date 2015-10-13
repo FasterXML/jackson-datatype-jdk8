@@ -6,6 +6,9 @@ Project: jackson-datatype-jdk8
 
 2.7.0 (not yet released)
 
+#18: Allow use of `@JsonInclude(content=Include.NON_EMPTY)` with `Optional<>`
+ (requested by James L)
+
 2.6.3 (not yet released)
 
 #13: Allow use of `@JsonDeserialize(contentAs=XXX)` with `Optional`
