@@ -139,15 +139,11 @@ public class OptionalSerializer
         // Also: may want to have more refined exclusion based on referenced value
         JsonInclude.Include contentIncl = _contentInclusion;
         if (property != null) {
-            AnnotationIntrospector intr = provider.getAnnotationIntrospector();
-            if (intr != null) {
-                JsonInclude.Value incl = intr.findPropertyInclusion(property.getMember());
-                if (incl != null) {
-                    JsonInclude.Include newIncl = incl.getContentInclusion();
-                    if ((newIncl != contentIncl) && (newIncl != JsonInclude.Include.NON_DEFAULT)) {
-                        contentIncl = newIncl;
-                    }
-                }
+            JsonInclude.Value incl = property.findPropertyInclusion(provider.getConfig(),
+                    Optional.class);
+            JsonInclude.Include newIncl = incl.getContentInclusion();
+            if ((newIncl != contentIncl) && (newIncl != JsonInclude.Include.USE_DEFAULTS)) {
+                contentIncl = newIncl;
             }
         }
         return withResolved(property, ser, _unwrapper, contentIncl);
