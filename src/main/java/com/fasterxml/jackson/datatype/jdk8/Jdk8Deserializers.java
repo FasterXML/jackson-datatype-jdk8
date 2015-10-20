@@ -31,7 +31,7 @@ class Jdk8Deserializers extends Deserializers.Base
             }
             JsonDeserializer<?> valueDeser = type.getValueHandler();
             TypeDeserializer typeDeser = type.getTypeHandler();
-            // [jackson-datatype-guava:Issue#42]: Polymorphic types need type deserializer
+            // Polymorphic types need type deserializer
             if (typeDeser == null) {
                 try {
                     typeDeser = config.findTypeDeserializer(refType);
