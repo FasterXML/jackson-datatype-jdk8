@@ -115,7 +115,7 @@ final class OptionalDeserializer
         if (t != null && t.isScalarValue()) {
             return deserialize(p, ctxt);
         }
-        // with type deserializer to use here? Looks like we get passed same one?
+        // which type deserializer to use here? Looks like we get passed same one?
         return Optional.of(typeDeserializer.deserializeTypedFromAny(p, ctxt));
     }
 }

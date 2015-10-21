@@ -1,55 +1,40 @@
 package com.fasterxml.jackson.datatype.jdk8;
 
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
+import java.util.*;
 
-import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.DeserializationConfig;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.Deserializers;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.type.ReferenceType;
 
 class Jdk8Deserializers extends Deserializers.Base
 {
-    @Override
-    public JsonDeserializer<?> findBeanDeserializer(JavaType type, DeserializationConfig config, BeanDescription beanDesc)
-    throws JsonMappingException
+    // 21-Oct-2015, tatu: Code much simplified with 2.7 where we should be getting much
+    //    of boilerplate handling code simplified
+    
+    @Override // since 2.7
+    public JsonDeserializer<?> findReferenceDeserializer(ReferenceType refType,
+            DeserializationConfig config, BeanDescription beanDesc,
+            TypeDeserializer contentTypeDeserializer, JsonDeserializer<?> contentDeserializer)
     {
-        final Class<?> raw = type.getRawClass();
-        if (raw == Optional.class) {
-            JavaType refType = type.getReferencedType();
-            
-            // 10-Oct-2015, tatu: Really should not occur. But... let's be paranoid
-            if (refType == null) {
-                // error or placeholder? Placeholder for now:
-                refType = TypeFactory.unknownType();
-            }
-            JsonDeserializer<?> valueDeser = type.getValueHandler();
-            TypeDeserializer typeDeser = type.getTypeHandler();
-            // Polymorphic types need type deserializer
-            if (typeDeser == null) {
-                try {
-                    typeDeser = config.findTypeDeserializer(refType);
-                } catch (NoSuchMethodError e) { // Running on Jackson 2.3.x, remove this ugly hack once we drop support
-                    typeDeser = null;
-                }
-            }
-            return new OptionalDeserializer(type, refType, typeDeser, valueDeser);
+        if (refType.hasRawClass(Optional.class)) {
+            JavaType valueType = refType.getReferencedType();
+            return new OptionalDeserializer(refType, valueType, contentTypeDeserializer, contentDeserializer);
         }
-        if (raw == OptionalInt.class) {
+
+        // 21-Oct-2015, tatu: Should probably consider possibility of custom deserializer being
+        //    added to property; if so, `contentDeserializer` would not be null.
+        //    Room for future improvement
+        
+        if (refType.hasRawClass(OptionalInt.class)) {
             return OptionalIntDeserializer.INSTANCE;
         }
-        if (raw == OptionalLong.class) {
+        if (refType.hasRawClass(OptionalLong.class)) {
             return OptionalLongDeserializer.INSTANCE;
         }
-        if (raw == OptionalDouble.class) {
+        if (refType.hasRawClass(OptionalDouble.class)) {
             return OptionalDoubleDeserializer.INSTANCE;
         }
-        return super.findBeanDeserializer(type, config, beanDesc);
+        return null;
     }
 }
