@@ -235,7 +235,10 @@ public class OptionalSerializer
         throws IOException
     {
         if (!opt.isPresent()) {
-            provider.defaultSerializeNull(gen);
+            // [datatype-jdk8#20]: can not write `null` if unwrapped
+            if (_unwrapper == null) {
+                provider.defaultSerializeNull(gen);
+            }
             return;
         }
         Object value = opt.get();
@@ -256,7 +259,10 @@ public class OptionalSerializer
             TypeSerializer typeSer) throws IOException
     {
         if (!opt.isPresent()) {
-            provider.defaultSerializeNull(gen);
+            // [datatype-jdk8#20]: can not write `null` if unwrapped
+            if (_unwrapper == null) {
+                provider.defaultSerializeNull(gen);
+            }
             return;
         }
         Object value = opt.get();

@@ -25,11 +25,34 @@ public class OptionalUnwrappedTest extends ModuleTestBase
 		public Optional<Child> child = Optional.of(new Child());
 	}
 
+	static class Bean {
+	    public String id;
+	    @JsonUnwrapped(prefix="child")
+	    public Optional<Bean2> bean2;
+
+	    public Bean(String id, Optional<Bean2> bean2) {
+	        this.id = id;
+	        this.bean2 = bean2;
+	    }
+	}
+
+	static class Bean2 {
+	    public String name;
+	}	
+
 	public void testUntypedWithOptionalsNotNulls() throws Exception
 	{
 		final ObjectMapper mapper = mapperWithModule(false);
 		String jsonExp = aposToQuotes("{'XX.name':'Bob'}");
 		String jsonAct = mapper.writeValueAsString(new OptionalParent());
 		assertEquals(jsonExp, jsonAct);
+	}
+
+	// for [datatype-jdk8#20]
+	public void testShouldSerializeUnwrappedOptional() throws Exception {
+         final ObjectMapper mapper = mapperWithModule(false);
+	    
+	    assertEquals("{\"id\":\"foo\"}",
+	            mapper.writeValueAsString(new Bean("foo", Optional.<Bean2>empty())));
 	}
 }

@@ -9,7 +9,12 @@ Project: jackson-datatype-jdk8
 #18: Allow use of `@JsonInclude(content=Include.NON_EMPTY)` with `Optional<>`
  (requested by James L)
 
-2.6.3 (not yet released)
+2.6.4 (not yet released)
+
+#20: fails to serialize empty Optional with @JsonUnwrapped annotation
+ (reported by Peter R, osi@github)
+
+2.6.3 (12-Oct-2015)
 
 #13: Allow use of `@JsonDeserialize(contentAs=XXX)` with `Optional`
 
