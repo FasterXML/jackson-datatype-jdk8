@@ -30,7 +30,8 @@ public class OptionalSerializer
     protected final JavaType _referredType;
 
     protected final BeanProperty _property;
-    
+
+    protected final TypeSerializer _valueTypeSerializer;
     protected final JsonSerializer<Object> _valueSerializer;
 
     /**
@@ -61,15 +62,17 @@ public class OptionalSerializer
      */
 
     public OptionalSerializer(JavaType type) {
-        this(type, null);
+        this(type, null, null);
     }
 
     @SuppressWarnings("unchecked")
-    protected OptionalSerializer(JavaType optionalType, JsonSerializer<?> valueSer)
+    protected OptionalSerializer(JavaType optionalType,
+            TypeSerializer vts, JsonSerializer<?> valueSer)
     {
         super(optionalType);
         _referredType = _valueType(optionalType);
         _property = null;
+        _valueTypeSerializer = vts;
         _valueSerializer = (JsonSerializer<Object>) valueSer;
         _unwrapper = null;
         _contentInclusion = null;
@@ -77,14 +80,15 @@ public class OptionalSerializer
     }
 
     @SuppressWarnings("unchecked")
-    protected OptionalSerializer(OptionalSerializer base,
-            BeanProperty property, JsonSerializer<?> valueSer, NameTransformer unwrapper,
-            JsonInclude.Include contentIncl)
+    protected OptionalSerializer(OptionalSerializer base, BeanProperty property,
+            TypeSerializer vts, JsonSerializer<?> valueSer,
+            NameTransformer unwrapper, JsonInclude.Include contentIncl)
     {
         super(base);
         _referredType = base._referredType;
         _dynamicSerializers = base._dynamicSerializers;
         _property = property;
+        _valueTypeSerializer = vts;
         _valueSerializer = (JsonSerializer<Object>) valueSer;
         _unwrapper = unwrapper;
         if ((contentIncl == JsonInclude.Include.USE_DEFAULTS)
@@ -103,18 +107,19 @@ public class OptionalSerializer
         }
         NameTransformer unwrapper = (_unwrapper == null) ? transformer
                 : NameTransformer.chainedTransformer(transformer, _unwrapper);
-        return withResolved(_property, ser, unwrapper, _contentInclusion);
+        return withResolved(_property, _valueTypeSerializer, ser, unwrapper, _contentInclusion);
     }
-    
+
     protected OptionalSerializer withResolved(BeanProperty prop,
-            JsonSerializer<?> ser, NameTransformer unwrapper,
-            JsonInclude.Include contentIncl)
+            TypeSerializer vts, JsonSerializer<?> valueSer,
+            NameTransformer unwrapper, JsonInclude.Include contentIncl)
     {
         if ((_property == prop) && (contentIncl == _contentInclusion)
-                && (_valueSerializer == ser) && (_unwrapper == unwrapper)) {
+                && (_valueTypeSerializer == vts) && (_valueSerializer == valueSer)
+                && (_unwrapper == unwrapper)) {
             return this;
         }
-        return new OptionalSerializer(this, prop, ser, unwrapper, contentIncl);
+        return new OptionalSerializer(this, prop, vts, valueSer, unwrapper, contentIncl);
     }
 
     /*
@@ -122,11 +127,15 @@ public class OptionalSerializer
     /* Contextualization (support for property annotations)
     /**********************************************************
      */
-    
+
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider provider,
             BeanProperty property) throws JsonMappingException
     {
+        TypeSerializer vts = _valueTypeSerializer;
+        if (vts != null) {
+            vts = vts.forProperty(property);
+        }
         JsonSerializer<?> ser = _valueSerializer;
         if (ser == null) {
             // A few conditions needed to be able to fetch serializer here:
@@ -146,22 +155,22 @@ public class OptionalSerializer
                 contentIncl = newIncl;
             }
         }
-        return withResolved(property, ser, _unwrapper, contentIncl);
+        return withResolved(property, vts, ser, _unwrapper, contentIncl);
     }
 
     protected boolean _useStatic(SerializerProvider provider, BeanProperty property,
             JavaType referredType)
     {
         // First: no serializer for `Object.class`, must be dynamic
-        if (_referredType.isJavaLangObject()) {
+        if (referredType.isJavaLangObject()) {
             return false;
         }
         // but if type is final, might as well fetch
-        if (_referredType.isFinal()) { // or should we allow annotation override? (only if requested...)
+        if (referredType.isFinal()) { // or should we allow annotation override? (only if requested...)
             return true;
         }
         // also: if indicated by typing, should be considered static
-        if (_referredType.useStaticType()) {
+        if (referredType.useStaticType()) {
             return true;
         }
         // if neither, maybe explicit annotation?
@@ -224,17 +233,21 @@ public class OptionalSerializer
     public void serialize(Optional<?> opt, JsonGenerator gen, SerializerProvider provider)
         throws IOException
     {
-        if (opt.isPresent()) {
-            Object value = opt.get();
-            JsonSerializer<Object> ser = _valueSerializer;
-            if (ser == null) {
-                ser = _findCachedSerializer(provider, value.getClass());
-            }
-            ser.serialize(value, gen, provider);
-        } else {
+        if (!opt.isPresent()) {
             provider.defaultSerializeNull(gen);
+            return;
         }
-    }
+        Object value = opt.get();
+        JsonSerializer<Object> ser = _valueSerializer;
+        if (ser == null) {
+            ser = _findCachedSerializer(provider, value.getClass());
+        }
+        if (_valueTypeSerializer != null) {
+            ser.serializeWithType(value, gen, provider, _valueTypeSerializer);
+        } else {
+            ser.serialize(value, gen, provider);
+        }
+}
 
     @Override
     public void serializeWithType(Optional<?> opt,
