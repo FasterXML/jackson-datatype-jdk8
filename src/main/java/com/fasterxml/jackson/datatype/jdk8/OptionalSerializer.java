@@ -153,7 +153,11 @@ public class OptionalSerializer
             }
             ser.serialize(value, gen, provider);
         } else {
-            provider.defaultSerializeNull(gen);
+            if (_unwrapper != null) {
+                
+            } else {
+                provider.defaultSerializeNull(gen);
+            }
         }
     }
 

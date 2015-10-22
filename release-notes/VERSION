@@ -4,6 +4,11 @@ Project: jackson-datatype-jdk8
 === Releases ===
 ------------------------------------------------------------------------
 
+2.6.4 (not yet released)
+
+#20: fails to serialize empty Optional with @JsonUnwrapped annotation
+ (reported by Peter R, osi@github)
+
 2.6.3 (12-Oct-2015)
 
 #13: Allow use of `@JsonDeserialize(contentAs=XXX)` with `Optional`
