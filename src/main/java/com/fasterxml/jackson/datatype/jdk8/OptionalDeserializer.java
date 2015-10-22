@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -87,18 +86,12 @@ final class OptionalDeserializer
     @Override
     public Optional<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException
     {
-        Object refd;
-
-        if (_valueTypeDeserializer == null) {
-            refd = _valueDeserializer.deserialize(p, ctxt);
-        } else {
-            refd = _valueDeserializer.deserializeWithType(p, ctxt, _valueTypeDeserializer);
-        }
-        return Optional.of(refd);
+        Object refd = (_valueTypeDeserializer == null)
+                ? _valueDeserializer.deserialize(p, ctxt)
+                : _valueDeserializer.deserializeWithType(p, ctxt, _valueTypeDeserializer);
+        return Optional.ofNullable(refd);
     }
 
-    /* NOTE: usually should not need this method... but for some reason, it is needed here.
-     */
     @Override
     public Optional<?> deserializeWithType(JsonParser p, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
         throws IOException
@@ -112,10 +105,12 @@ final class OptionalDeserializer
         //   These might actually be handled ok except that nominal type here
         //   is `Optional`, so special handling is not invoked; instead, need
         //   to do a work-around here.
+        // 22-Oct-2015, tatu: Most likely this is actually wrong, result of incorrewct
+        //   serialization (up to 2.6, was omitting necessary type info after all);
+        //   but safest to leave in place for now
         if (t != null && t.isScalarValue()) {
             return deserialize(p, ctxt);
         }
-        // which type deserializer to use here? Looks like we get passed same one?
-        return Optional.of(typeDeserializer.deserializeTypedFromAny(p, ctxt));
+        return (Optional<?>) typeDeserializer.deserializeTypedFromAny(p, ctxt);
     }
 }

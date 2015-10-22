@@ -1,27 +1,24 @@
 package com.fasterxml.jackson.datatype.jdk8;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jdk8.TestConfigureAbsentsAsNulls.OptionalData;
 
-public class TestOptionalBasic extends ModuleTestBase {
+public class OptionalBasicTest extends ModuleTestBase
+{
+    public static final class OptionalData {
+        public Optional<String> myString;
+    }
 
-	private final ObjectMapper MAPPER = mapperWithModule();
-
-	@JsonAutoDetect(fieldVisibility = Visibility.ANY)
-	public static final class OptionalGenericData<T> {
-		private Optional<T> myData;
-	}
+    @JsonAutoDetect(fieldVisibility = Visibility.ANY)
+    public static final class OptionalGenericData<T> {
+        private Optional<T> myData;
+    }
 	
     @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class)
     public static class Unit
@@ -40,12 +37,28 @@ public class TestOptionalBasic extends ModuleTestBase {
         }
     }
 
+    // To test handling of polymorphic value types
+    
+    public static class Container {
+        public Optional<Contained> contained;
+    }
+
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = As.PROPERTY)
+    @JsonSubTypes({
+        @JsonSubTypes.Type(name = "ContainedImpl", value = ContainedImpl.class),
+    })
+    public static interface Contained { }
+
+    public static class ContainedImpl implements Contained { }
+    
     /*
     /**********************************************************
     /* Test methods
     /**********************************************************
      */
-    
+
+    private final ObjectMapper MAPPER = mapperWithModule();
+
     public void testOptionalTypeResolution() throws Exception {
 		// With 2.6, we need to recognize it as ReferenceType
 		JavaType t = MAPPER.constructType(Optional.class);
@@ -226,5 +239,23 @@ public class TestOptionalBasic extends ModuleTestBase {
 		for (int i = 0; i < list.size(); ++i) {
 			assertEquals("Entry #" + i, list.get(i), result.get(i));
 		}
+	}
+
+	public void testDeserNull() throws Exception {
+	    Optional<?> value = MAPPER.readValue("\"\"", new TypeReference<Optional<Integer>>() {});
+	    assertFalse(value.isPresent());
+	}
+
+	public void testPolymorphic() throws Exception
+	{
+	    final Container dto = new Container();
+	    dto.contained = Optional.of((Contained) new ContainedImpl());
+
+	    final String json = MAPPER.writeValueAsString(dto);
+
+	    final Container fromJson = MAPPER.readValue(json, Container.class);
+	    assertNotNull(fromJson.contained);
+	    assertTrue(fromJson.contained.isPresent());
+	    assertSame(ContainedImpl.class, fromJson.contained.get().getClass());
 	}
 }

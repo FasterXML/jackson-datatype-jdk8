@@ -14,17 +14,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public class TestOptionalWithPolymorphic extends ModuleTestBase
 {
     static class ContainerA {
-        @JsonProperty
-        private Optional<String> name = Optional.empty();
-        @JsonProperty
-        private Optional<Strategy> strategy = Optional.empty();
+        @JsonProperty private Optional<String> name = Optional.empty();
+        @JsonProperty private Optional<Strategy> strategy = Optional.empty();
     }
 
     static class ContainerB {
-        @JsonProperty
-        private Optional<String> name = Optional.empty();
-        @JsonProperty
-        private Strategy strategy = null;
+        @JsonProperty private Optional<String> name = Optional.empty();
+        @JsonProperty private Strategy strategy = null;
     }
 
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
@@ -34,8 +30,7 @@ public class TestOptionalWithPolymorphic extends ModuleTestBase
     interface Strategy { }
 
     static class Foo implements Strategy {
-        @JsonProperty
-        private final int foo;
+        @JsonProperty private final int foo;
 
         @JsonCreator
         Foo(@JsonProperty("foo") int foo) {
@@ -44,8 +39,7 @@ public class TestOptionalWithPolymorphic extends ModuleTestBase
     }
 
     static class Bar implements Strategy {
-        @JsonProperty
-        private final boolean bar;
+        @JsonProperty private final boolean bar;
 
         @JsonCreator
         Bar(@JsonProperty("bar") boolean bar) {
@@ -54,8 +48,7 @@ public class TestOptionalWithPolymorphic extends ModuleTestBase
     }
 
     static class Baz implements Strategy {
-        @JsonProperty
-        private final String baz;
+        @JsonProperty private final String baz;
 
         @JsonCreator
         Baz(@JsonProperty("baz") String baz) {
@@ -76,7 +69,7 @@ public class TestOptionalWithPolymorphic extends ModuleTestBase
 
     final ObjectMapper MAPPER = mapperWithModule();
 
-	public void testOptionalMapsFoo() throws Exception {
+    public void testOptionalMapsFoo() throws Exception {
 
 		Map<String, Object> foo = new LinkedHashMap<>();
 		Map<String, Object> loop = new LinkedHashMap<>();
@@ -87,9 +80,9 @@ public class TestOptionalWithPolymorphic extends ModuleTestBase
 		foo.put("strategy", loop);
 		
 		_test(MAPPER, foo);
-	}
-	
-	public void testOptionalMapsBar() throws Exception {
+    }
+
+    public void testOptionalMapsBar() throws Exception {
 		
 		Map<String, Object> bar = new LinkedHashMap<>();
 		Map<String, Object> loop = new LinkedHashMap<>();
@@ -100,9 +93,9 @@ public class TestOptionalWithPolymorphic extends ModuleTestBase
 		bar.put("strategy", loop);
 		
 		_test(MAPPER, bar);
-	}
+    }
 
-	public void testOptionalMapsBaz() throws Exception {
+    public void testOptionalMapsBaz() throws Exception {
 		Map<String, Object> baz = new LinkedHashMap<>();
 		Map<String, Object> loop = new LinkedHashMap<>();
 		loop.put("type", "Baz");
@@ -112,26 +105,26 @@ public class TestOptionalWithPolymorphic extends ModuleTestBase
 		baz.put("strategy", loop);
 
 		_test(MAPPER, baz);
-	}
+    }
 
-	public void testOptionalWithTypeAnnotation13() throws Exception
-	{
-	    AbstractOptional result = MAPPER.readValue("{\"value\" : 5}",
-	            AbstractOptional.class);
-	    assertNotNull(result);
-         assertNotNull(result.value);
-         Object ob = result.value.get();
-         assertEquals(Integer.class, ob.getClass());
-         assertEquals(Integer.valueOf(5), ob);
-	}
+    public void testOptionalWithTypeAnnotation13() throws Exception
+    {
+        AbstractOptional result = MAPPER.readValue("{\"value\" : 5}",
+                AbstractOptional.class);
+        assertNotNull(result);
+        assertNotNull(result.value);
+        Object ob = result.value.get();
+        assertEquals(Integer.class, ob.getClass());
+        assertEquals(Integer.valueOf(5), ob);
+    }
 
-	private void _test(ObjectMapper m, Map<String, ?> map) throws Exception {
-		String json = m.writeValueAsString(map);
+    private void _test(ObjectMapper m, Map<String, ?> map) throws Exception {
+        String json = m.writeValueAsString(map);
 
-		ContainerA objA = m.readValue(json, ContainerA.class);
-		assertNotNull(objA);
+        ContainerA objA = m.readValue(json, ContainerA.class);
+        assertNotNull(objA);
 
-		ContainerB objB = m.readValue(json, ContainerB.class);
-		assertNotNull(objB);
-	}
+        ContainerB objB = m.readValue(json, ContainerB.class);
+        assertNotNull(objB);
+    }
 }
