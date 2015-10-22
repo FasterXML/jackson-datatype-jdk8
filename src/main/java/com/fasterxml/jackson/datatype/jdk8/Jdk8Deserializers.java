@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.type.ReferenceType;
 class Jdk8Deserializers extends Deserializers.Base
 {
     // 21-Oct-2015, tatu: Code much simplified with 2.7 where we should be getting much
-    //    of boilerplate handling code simplified
-    
+    //    of boilerplate handling automatically
+
     @Override // since 2.7
     public JsonDeserializer<?> findReferenceDeserializer(ReferenceType refType,
             DeserializationConfig config, BeanDescription beanDesc,

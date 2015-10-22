@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.type.ReferenceType;
 import com.fasterxml.jackson.databind.util.NameTransformer;
 
 public class OptionalSerializer
@@ -46,7 +46,7 @@ public class OptionalSerializer
      * @since 2.7
      */
     protected final JsonInclude.Include _contentInclusion;
-    
+
     /**
      * If element type can not be statically determined, mapping from
      * runtime type to serializer is handled using this object
@@ -61,16 +61,17 @@ public class OptionalSerializer
     /**********************************************************
      */
 
+    @Deprecated // since 2.7
     public OptionalSerializer(JavaType type) {
-        this(type, null, null);
+        this((ReferenceType) type, null, null);
     }
 
     @SuppressWarnings("unchecked")
-    protected OptionalSerializer(JavaType optionalType,
+    protected OptionalSerializer(ReferenceType optionalType,
             TypeSerializer vts, JsonSerializer<?> valueSer)
     {
         super(optionalType);
-        _referredType = _valueType(optionalType);
+        _referredType = optionalType.getReferencedType();
         _property = null;
         _valueTypeSerializer = vts;
         _valueSerializer = (JsonSerializer<Object>) valueSer;
@@ -247,23 +248,23 @@ public class OptionalSerializer
         } else {
             ser.serialize(value, gen, provider);
         }
-}
+    }
 
     @Override
     public void serializeWithType(Optional<?> opt,
             JsonGenerator gen, SerializerProvider provider,
             TypeSerializer typeSer) throws IOException
     {
-        if (opt.isPresent()) {
-            Object value = opt.get();
-            JsonSerializer<Object> ser = _valueSerializer;
-            if (ser == null) {
-                ser = _findCachedSerializer(provider, value.getClass());
-            }
-            ser.serializeWithType(value, gen, provider, typeSer);
-        } else {
+        if (!opt.isPresent()) {
             provider.defaultSerializeNull(gen);
+            return;
         }
+        Object value = opt.get();
+        JsonSerializer<Object> ser = _valueSerializer;
+        if (ser == null) {
+            ser = _findCachedSerializer(provider, value.getClass());
+        }
+        ser.serializeWithType(value, gen, provider, typeSer);
     }
 
     /*
@@ -287,14 +288,6 @@ public class OptionalSerializer
     /* Misc other
     /**********************************************************
      */
-    
-    protected static JavaType _valueType(JavaType optionalType) {
-        JavaType valueType = optionalType.containedType(0);
-        if (valueType == null) {
-            valueType = TypeFactory.unknownType();
-        }
-        return valueType;
-    }
 
     /**
      * Helper method that encapsulates logic of retrieving and caching required
