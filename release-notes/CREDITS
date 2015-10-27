@@ -19,3 +19,8 @@ Peter Royal (osi@github)
 
 * Reported #20: fails to serialize empty Optional with @JsonUnwrapped annotation
  (2.6.4)
+
+Nick Cronin (Quintok@github)
+
+* Reported #21: Manifest file missing OSGi import for `com.fasterxml.jackson.databind.introspect`
+ (2.6.4)

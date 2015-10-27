@@ -8,6 +8,8 @@ Project: jackson-datatype-jdk8
 
 #20: fails to serialize empty Optional with @JsonUnwrapped annotation
  (reported by Peter R, osi@github)
+#21: Manifest file missing OSGi import for `com.fasterxml.jackson.databind.introspect`
+ (reported by Nick C)
 
 2.6.3 (12-Oct-2015)
 
