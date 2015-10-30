@@ -64,12 +64,12 @@ System.out.println(nullEmailJson);
 
 Contact emptyEmail = new Contact("Example Co.", Optional.empty());
 String emptyEmailJson = mapper.writeValueAsString(emptyEmail);
-// {"name":"Example Co.","email":null}
+// prints: {"name":"Example Co.","email":null}
 System.out.println(emptyEmailJson);
 
 Contact withEmail = new Contact("Example Co.", Optional.of("info@example.com"));
 String withEmailJson = mapper.writeValueAsString(withEmail);
-// {"name":"Example Co.","email":"info@example.com"}
+// prints:  {"name":"Example Co.","email":"info@example.com"}
 System.out.println(withEmailJson);
 ```
 
