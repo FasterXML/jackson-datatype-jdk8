@@ -35,6 +35,7 @@ Like all standard Jackson modules (libraries that implement Module interface), r
 ```java
 ObjectMapper mapper = new ObjectMapper();
 mapper.registerModule(new Jdk8Module());
+// Or, the more fluent version: ObjectMapper mapper = new ObjectMapper().registerModule(new Jdk8Module());
 ```
 
 after which functionality is available for all normal Jackson operations:
@@ -55,8 +56,6 @@ class Contact {
 
 ...
 
-ObjectMapper mapper = new ObjectMapper();
-mapper.registerModule(new Jdk8Module());
 
 Contact nullEmail = new Contact("Example Co.", null);
 String nullEmailJson = mapper.writeValueAsString(nullEmail);
