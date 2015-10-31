@@ -22,7 +22,7 @@ To use module on Maven-based projects, use following dependency:
 <dependency>
   <groupId>com.fasterxml.jackson.datatype</groupId>
   <artifactId>jackson-datatype-jdk8</artifactId>
-  <version>2.6.1</version>
+  <version>2.6.3</version>
 </dependency>    
 ```
 
@@ -35,15 +35,47 @@ Like all standard Jackson modules (libraries that implement Module interface), r
 ```java
 ObjectMapper mapper = new ObjectMapper();
 mapper.registerModule(new Jdk8Module());
+// Or, the more fluent version: ObjectMapper mapper = new ObjectMapper().registerModule(new Jdk8Module());
 ```
 
 after which functionality is available for all normal Jackson operations:
 you can read JSON into supported JDK8 types, as well as write values of such types as JSON, so that for example:
 
 ```java
-// TODO: real example
-Optional<String> str = ...;
-String json = mapper.writeValueAsString(str);
+class Contact {
+    private final String name;
+    private final Optional<String> email;
+
+    public Contact(String name, Optional<String> email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Optional<String> getEmail() {
+        return email;
+    }
+}
+
+...
+
+Contact nullEmail = new Contact("Example Co.", null);
+String nullEmailJson = mapper.writeValueAsString(nullEmail);
+// prints: {"name":"Example Co.","email":null}
+System.out.println(nullEmailJson);
+
+Contact emptyEmail = new Contact("Example Co.", Optional.empty());
+String emptyEmailJson = mapper.writeValueAsString(emptyEmail);
+// prints: {"name":"Example Co.","email":null}
+System.out.println(emptyEmailJson);
+
+Contact withEmail = new Contact("Example Co.", Optional.of("info@example.com"));
+String withEmailJson = mapper.writeValueAsString(withEmail);
+// prints:  {"name":"Example Co.","email":"info@example.com"}
+System.out.println(withEmailJson);
 ```
 
 ## More
