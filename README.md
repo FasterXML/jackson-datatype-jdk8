@@ -43,19 +43,24 @@ you can read JSON into supported JDK8 types, as well as write values of such typ
 
 ```java
 class Contact {
-    @JsonProperty
     private final String name;
-    @JsonProperty
     private final Optional<String> email;
 
     public Contact(String name, Optional<String> email) {
         this.name = name;
         this.email = email;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public Optional<String> getEmail() {
+        return email;
+    }
 }
 
 ...
-
 
 Contact nullEmail = new Contact("Example Co.", null);
 String nullEmailJson = mapper.writeValueAsString(nullEmail);
