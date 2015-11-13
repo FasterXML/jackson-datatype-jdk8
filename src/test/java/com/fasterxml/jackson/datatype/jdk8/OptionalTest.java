@@ -81,7 +81,16 @@ public class OptionalTest extends ModuleTestBase
             Issue4Entity entity = (Issue4Entity) o;
             return data.equals(entity.data);
         }
-    }    
+    }
+
+    static class BooleanBean {
+        public Optional<Boolean> value;
+
+        public BooleanBean() { }
+        public BooleanBean(Boolean b) {
+            value = Optional.ofNullable(b);
+        }
+    }
 
     private ObjectMapper MAPPER;
 
@@ -208,6 +217,33 @@ public class OptionalTest extends ModuleTestBase
                 mapper.writeValueAsString(new OptionalLongBean()));
     }
 
+    // for [datatype-jdk8#23]
+    public void testBoolean() throws Exception
+    {
+        // First, serialization
+        String json = MAPPER.writeValueAsString(new BooleanBean(true));
+        assertEquals(aposToQuotes("{'value':true}"), json);
+        json = MAPPER.writeValueAsString(new BooleanBean());
+        assertEquals(aposToQuotes("{'value':null}"), json);
+        json = MAPPER.writeValueAsString(new BooleanBean(null));
+        assertEquals(aposToQuotes("{'value':null}"), json);
+
+        // then deser
+        BooleanBean b = MAPPER.readValue(aposToQuotes("{'value':null}"), BooleanBean.class);
+        assertNotNull(b.value);
+        assertFalse(b.value.isPresent());
+
+        b = MAPPER.readValue(aposToQuotes("{'value':false}"), BooleanBean.class);
+        assertNotNull(b.value);
+        assertTrue(b.value.isPresent());
+        assertFalse(b.value.get().booleanValue());
+
+        b = MAPPER.readValue(aposToQuotes("{'value':true}"), BooleanBean.class);
+        assertNotNull(b.value);
+        assertTrue(b.value.isPresent());
+        assertTrue(b.value.get().booleanValue());
+    }
+    
     /*
     /**********************************************************
     /* Helper methods
