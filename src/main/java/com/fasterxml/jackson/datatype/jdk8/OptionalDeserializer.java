@@ -123,7 +123,7 @@ final class OptionalDeserializer
         } else {
             refd = _valueDeserializer.deserializeWithType(p, ctxt, _valueTypeDeserializer);
         }
-        return Optional.of(refd);
+        return Optional.ofNullable(refd);
     }
 
     /* NOTE: usually should not need this method... but for some reason, it is needed here.
@@ -145,6 +145,6 @@ final class OptionalDeserializer
             return deserialize(p, ctxt);
         }
         // with type deserializer to use here? Looks like we get passed same one?
-        return Optional.of(typeDeserializer.deserializeTypedFromAny(p, ctxt));
+        return Optional.ofNullable(typeDeserializer.deserializeTypedFromAny(p, ctxt));
     }
 }
