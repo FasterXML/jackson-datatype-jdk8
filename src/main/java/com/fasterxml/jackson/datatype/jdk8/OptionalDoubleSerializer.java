@@ -4,7 +4,12 @@ import java.io.IOException;
 import java.util.OptionalDouble;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonNumberFormatVisitor;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 public class OptionalDoubleSerializer extends StdSerializer<OptionalDouble>
@@ -21,15 +26,24 @@ public class OptionalDoubleSerializer extends StdSerializer<OptionalDouble>
     public boolean isEmpty(SerializerProvider provider, OptionalDouble value) {
         return (value == null) || !value.isPresent();
     }
-    
+
     @Override
-    public void serialize(OptionalDouble value, JsonGenerator jgen, SerializerProvider provider)
+    public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor,
+            JavaType typeHint) throws JsonMappingException {
+        JsonNumberFormatVisitor v2 = visitor.expectNumberFormat(typeHint);
+        if (v2 != null) {
+            v2.numberType(JsonParser.NumberType.DOUBLE);
+        }
+    }
+
+    @Override
+    public void serialize(OptionalDouble value, JsonGenerator gen, SerializerProvider provider)
         throws IOException
     {
         if (value.isPresent()) {
-            jgen.writeNumber(value.getAsDouble());
+            gen.writeNumber(value.getAsDouble());
         } else {
-            jgen.writeNull();
+            gen.writeNull();
         }
     }
 }

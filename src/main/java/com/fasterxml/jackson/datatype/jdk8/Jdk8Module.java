@@ -40,7 +40,7 @@ public class Jdk8Module extends Module
 
     /**
      * Configuration method that may be used to change configuration setting
-     * {@link #_cfgHandleAbsentAsNull}: enabling means that `Optional.empty()` values
+     * <code>_cfgHandleAbsentAsNull</code>: enabling means that `Optional.empty()` values
      * are handled like Java nulls (wrt filtering on serialization); disabling that
      * they are only treated as "empty" values, but not like native Java nulls.
      * Recommended setting for this value is `false`. For compatibility with older versions
