@@ -12,6 +12,8 @@ Project: jackson-datatype-jdk8
  (reported by Nick C)
 #23: Fix an NPE for `Optional<Boolean>` when coercing from empty JSON String
  (reported by brunoschuermans@github)
+#25: OptionalDoubleSerializer does not override acceptJsonFormatVisitor
+ (reported by Peter R)
 
 2.6.3 (12-Oct-2015)
 

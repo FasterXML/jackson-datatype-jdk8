@@ -19,6 +19,9 @@ Peter Royal (osi@github)
 
 * Reported #20: fails to serialize empty Optional with @JsonUnwrapped annotation
  (2.6.4)
+* Reported #25: OptionalDoubleSerializer does not override acceptJsonFormatVisitor
+ (2.6.4)
+
 
 Nick Cronin (Quintok@github)
 
