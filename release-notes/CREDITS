@@ -21,7 +21,9 @@ Peter Royal (osi@github)
  (2.6.4)
 * Reported #25: OptionalDoubleSerializer does not override acceptJsonFormatVisitor
  (2.6.4)
-
+* Reported, contributed fix fo #26: `@JsonUnwrapped` on Optional value does not
+ propagate prefix to schema
+ (2.6.4)
 
 Nick Cronin (Quintok@github)
 

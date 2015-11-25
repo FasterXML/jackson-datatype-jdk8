@@ -1,9 +1,15 @@
 package com.fasterxml.jackson.datatype.jdk8;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.databind.BeanProperty;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
+import com.fasterxml.jackson.databind.ser.DefaultSerializerProvider;
 
 public class OptionalUnwrappedTest extends ModuleTestBase
 {
@@ -54,5 +60,25 @@ public class OptionalUnwrappedTest extends ModuleTestBase
 	    
 	    assertEquals("{\"id\":\"foo\"}",
 	            mapper.writeValueAsString(new Bean("foo", Optional.<Bean2>empty())));
+	}
+
+	// for [datatype-jdk8#26]
+	public void testPropogatePrefixToSchema() throws Exception {
+        final ObjectMapper mapper = mapperWithModule(false);
+
+		final AtomicReference<String> propertyName = new AtomicReference<>();
+		mapper.acceptJsonFormatVisitor(OptionalParent.class, new JsonFormatVisitorWrapper.Base(new DefaultSerializerProvider.Impl()) {
+			@Override
+			public JsonObjectFormatVisitor expectObjectFormat(JavaType type) {
+				return new JsonObjectFormatVisitor.Base(getProvider()) {
+					@Override
+					public void optionalProperty(BeanProperty prop) {
+						propertyName.set(prop.getName());
+					}
+				};
+			}
+		});
+
+		assertEquals("XX.name", propertyName.get());
 	}
 }

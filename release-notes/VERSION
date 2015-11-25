@@ -19,6 +19,8 @@ Project: jackson-datatype-jdk8
  (reported by brunoschuermans@github)
 #25: OptionalDoubleSerializer does not override acceptJsonFormatVisitor
  (reported by Peter R)
+#26: `@JsonUnwrapped` on Optional value does not propagate prefix to schema
+ (contributed by Peter R)
 
 2.6.3 (12-Oct-2015)
 
