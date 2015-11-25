@@ -212,6 +212,9 @@ public class OptionalSerializer
         JsonSerializer<?> ser = _valueSerializer;
         if (ser == null) {
             ser = _findSerializer(visitor.getProvider(), _referredType, _property);
+            if (_unwrapper != null) {
+                ser = ser.unwrappingSerializer(_unwrapper);
+            }
         }
         ser.acceptJsonFormatVisitor(visitor, _referredType);
     }
