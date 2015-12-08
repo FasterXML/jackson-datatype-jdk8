@@ -21,7 +21,7 @@ JDK 8 data types.
     <tag>HEAD</tag>
   </scm>
   <properties>
-    <version.jackson>2.5.4</version.jackson>
+    <version.jackson>2.5.5</version.jackson>
     <!-- explicitly target JDK 8 -->
     <javac.src.version>1.8</javac.src.version>
     <javac.target.version>1.8</javac.target.version>

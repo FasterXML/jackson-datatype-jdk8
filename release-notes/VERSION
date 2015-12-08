@@ -4,7 +4,7 @@ Project: jackson-datatype-jdk8
 === Releases ===
 ------------------------------------------------------------------------
 
-2.5.5 (not released yet)
+2.5.5 (07-Dec-2015)
 
 #23: Fix an NPE for `Optional<Boolean>` when coercing from empty JSON String
 
