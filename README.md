@@ -9,6 +9,8 @@ supported by core databind due to baseline being JDK 6, excluding following:
 ## Status
 
 [![Build Status](https://travis-ci.org/FasterXML/jackson-datatype-jdk8.svg)](https://travis-ci.org/FasterXML/jackson-datatype-jdk8)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/)
+[![Javadoc](https://javadoc-emblem.rhcloud.com/doc/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/badge.svg)](http://www.javadoc.io/doc/com.fasterxml.jackson.datatype/jackson-datatype-jdk8)
 
 As of Jackson 2.5, this module is stable and considered production ready.
 
