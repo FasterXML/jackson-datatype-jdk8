@@ -1,6 +1,7 @@
 package com.fasterxml.jackson.datatype.jdk8;
 
 import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
@@ -21,7 +22,8 @@ public class Jdk8BeanSerializerModifier extends BeanSerializerModifier
     {
         for (int i = 0; i < beanProperties.size(); ++i) {
             final BeanPropertyWriter writer = beanProperties.get(i);
-            if (Optional.class.isAssignableFrom(writer.getPropertyType())) {
+            JavaType type = writer.getType();
+            if (type.isTypeOrSubTypeOf(Optional.class)) {
                 beanProperties.set(i, new Jdk8OptionalBeanPropertyWriter(writer));
             }
         }
