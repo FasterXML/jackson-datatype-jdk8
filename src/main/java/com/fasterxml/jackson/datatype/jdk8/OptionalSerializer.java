@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
@@ -137,14 +138,17 @@ public class OptionalSerializer
         if (vts != null) {
             vts = vts.forProperty(property);
         }
-        JsonSerializer<?> ser = _valueSerializer;
+        JsonSerializer<?> ser = findContentSerializer(provider, property);
         if (ser == null) {
-            // A few conditions needed to be able to fetch serializer here:
-            if (_useStatic(provider, property, _referredType)) {
-                ser = _findSerializer(provider, _referredType, property);
+            ser = _valueSerializer;
+            if (ser == null) {
+                // A few conditions needed to be able to fetch serializer here:
+                if (_useStatic(provider, property, _referredType)) {
+                    ser = _findSerializer(provider, _referredType, property);
+                }
+            } else {
+                ser = provider.handlePrimaryContextualization(ser, property);
             }
-        } else {
-            ser = provider.handlePrimaryContextualization(ser, property);
         }
         // Also: may want to have more refined exclusion based on referenced value
         JsonInclude.Include contentIncl = _contentInclusion;
@@ -324,5 +328,25 @@ public class OptionalSerializer
         JavaType type, BeanProperty prop) throws JsonMappingException
     {
         return provider.findTypedValueSerializer(type, true, prop);
+    }
+
+    // !!! 22-Mar-2016, tatu: Method added in jackson-databind 2.7.4; may be used
+    //    when we go 2.8
+    protected JsonSerializer<?> findContentSerializer(SerializerProvider serializers,
+            BeanProperty property)
+        throws JsonMappingException
+    {
+        if (property != null) {
+            // First: if we have a property, may have property-annotation overrides
+            AnnotatedMember m = property.getMember();
+            final AnnotationIntrospector intr = serializers.getAnnotationIntrospector();
+            if (m != null) {
+                Object serDef = intr.findContentSerializer(m);
+                if (serDef != null) {
+                    return serializers.serializerInstance(m, serDef);
+                }
+            }
+        }
+        return null;
     }
 }

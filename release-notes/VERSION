@@ -4,6 +4,12 @@ Project: jackson-datatype-jdk8
 === Releases ===
 ------------------------------------------------------------------------
 
+2.7.4 (not yet release)
+
+#31: Support `@JsonSerialize(contentUsing=)` and `@JsonDeserialize(contentUsing=)`
+  for `Optional`
+ (reported by selenareneephillips)
+
 2.7.3 (16-Mar-2016)
 2.7.2 (27-Feb-2016)
 2.7.1 (02-Feb-2016)
@@ -15,7 +21,13 @@ No changes since 2.7.0
 #18: Allow use of `@JsonInclude(content=Include.NON_EMPTY)` with `Optional<>`
  (requested by James L)
 
-2.6.4 (not yet released)
+2.6.6 (not yet released)
+
+2.6.5 (19-Jan-2016)
+
+No changes since 2.6.4.
+
+2.6.4 (07-Dec-2015)
 
 #20: fails to serialize empty Optional with @JsonUnwrapped annotation
  (reported by Peter R, osi@github)
