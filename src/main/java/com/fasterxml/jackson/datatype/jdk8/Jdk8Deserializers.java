@@ -17,22 +17,19 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 class Jdk8Deserializers extends Deserializers.Base
 {
     @Override
-    public JsonDeserializer<?> findBeanDeserializer(JavaType type, DeserializationConfig config, BeanDescription beanDesc)
-    throws JsonMappingException
+    public JsonDeserializer<?> findBeanDeserializer(JavaType type,
+            DeserializationConfig config, BeanDescription beanDesc)
+        throws JsonMappingException
     {
         final Class<?> raw = type.getRawClass();
         if (raw == Optional.class) {
             JavaType[] types = config.getTypeFactory().findTypeParameters(type, Optional.class);
             JavaType refType = (types == null) ? TypeFactory.unknownType() : types[0];
-            JsonDeserializer<?> valueDeser = type.getValueHandler();
-            TypeDeserializer typeDeser = type.getTypeHandler();
-            // [jackson-datatype-guava:Issue#42]: Polymorphic types need type deserializer
+            JsonDeserializer<?> valueDeser = refType.getValueHandler();
+            TypeDeserializer typeDeser = refType.getTypeHandler();
+            // [jackson-datatype#42]: Polymorphic types need type deserializer
             if (typeDeser == null) {
-                try {
-                    typeDeser = config.findTypeDeserializer(refType);
-                } catch (NoSuchMethodError e) { // Running on Jackson 2.3.x, remove this ugly hack once we drop support
-                    typeDeser = null;
-                }
+                typeDeser = config.findTypeDeserializer(refType);
             }
             return new OptionalDeserializer(type, refType, typeDeser, valueDeser);
         }
