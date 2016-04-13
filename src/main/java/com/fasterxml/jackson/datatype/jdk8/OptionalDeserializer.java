@@ -18,46 +18,36 @@ final class OptionalDeserializer
 
     protected final JavaType _fullType;
 
-    protected final JavaType _referenceType;
-
     protected final JsonDeserializer<?> _valueDeserializer;
-
     protected final TypeDeserializer _valueTypeDeserializer;
 
-    public OptionalDeserializer(JavaType fullType, JavaType refType,
+    /*
+    /**********************************************************
+    /* Life-cycle
+    /**********************************************************
+     */
+    
+    public OptionalDeserializer(JavaType fullType,
             TypeDeserializer typeDeser, JsonDeserializer<?> valueDeser)
     {
         super(fullType);
         _fullType = fullType;
-        _referenceType = refType;
         _valueTypeDeserializer = typeDeser;
         _valueDeserializer = valueDeser;
-    }
-
-    @Override
-    public Optional<?> getNullValue(DeserializationContext ctxt) {
-        return Optional.empty();
     }
 
     /**
      * Overridable fluent factory method used for creating contextual
      * instances.
      */
-    protected OptionalDeserializer withResolved(JavaType refType,
-            TypeDeserializer typeDeser, JsonDeserializer<?> valueDeser)
+    protected OptionalDeserializer withResolved(TypeDeserializer typeDeser,
+            JsonDeserializer<?> valueDeser)
     {
-        if ((refType == _referenceType)
-                && (valueDeser == _valueDeserializer) && (typeDeser == _valueTypeDeserializer)) {
+        if ((valueDeser == _valueDeserializer) && (typeDeser == _valueTypeDeserializer)) {
             return this;
         }
-        return new OptionalDeserializer(_fullType, refType, typeDeser, valueDeser);
+        return new OptionalDeserializer(_fullType, typeDeser, valueDeser);
     }
-
-    /*
-    /**********************************************************
-    /* Validation, post-processing
-    /**********************************************************
-     */
 
     /**
      * Method called to finalize setup of this deserializer,
@@ -70,7 +60,7 @@ final class OptionalDeserializer
     {
         JsonDeserializer<?> deser = _valueDeserializer;
         TypeDeserializer typeDeser = _valueTypeDeserializer;
-        JavaType refType = _referenceType;
+        JavaType refType = _fullType.getReferencedType();
 
         if (deser == null) {
             deser = ctxt.findContextualValueDeserializer(refType, property);
@@ -80,9 +70,29 @@ final class OptionalDeserializer
         if (typeDeser != null) {
             typeDeser = typeDeser.forProperty(property);
         }
-        return withResolved(refType, typeDeser, deser);
+        return withResolved(typeDeser, deser);
     }
 
+    /*
+    /**********************************************************
+    /* Overridden accessors
+    /**********************************************************
+     */
+
+    @Override
+    public JavaType getValueType() { return _fullType; }
+
+    @Override
+    public Optional<?> getNullValue(DeserializationContext ctxt) {
+        return Optional.empty();
+    }
+
+    /*
+    /**********************************************************
+    /* Deserialization
+    /**********************************************************
+     */
+    
     @Override
     public Optional<?> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException
     {

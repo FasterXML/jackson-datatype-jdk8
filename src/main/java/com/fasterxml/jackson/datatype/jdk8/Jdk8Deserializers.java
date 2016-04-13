@@ -18,10 +18,8 @@ class Jdk8Deserializers extends Deserializers.Base
             TypeDeserializer contentTypeDeserializer, JsonDeserializer<?> contentDeserializer)
     {
         if (refType.hasRawClass(Optional.class)) {
-            JavaType valueType = refType.getReferencedType();
-            return new OptionalDeserializer(refType, valueType, contentTypeDeserializer, contentDeserializer);
+            return new OptionalDeserializer(refType, contentTypeDeserializer,contentDeserializer);
         }
-
         // 21-Oct-2015, tatu: Should probably consider possibility of custom deserializer being
         //    added to property; if so, `contentDeserializer` would not be null.
         //    Room for future improvement
