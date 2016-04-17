@@ -6,6 +6,12 @@ Project: jackson-datatype-jdk8
 
 2.7.4 (not yet released)
 
+#31: Support `@JsonSerialize(contentUsing=)` and `@JsonDeserialize(contentUsing=)`
+  for `Optional`
+ (reported by selenareneephillips)
+#34: Fix OptionalSerializer.isEmpty() from an incorrect class cast exception
+ (by Nate B)
+
 2.6.6 (05-Apr-2016)
 
 #31: Support `@JsonSerialize(contentUsing=)` and `@JsonDeserialize(contentUsing=)`
