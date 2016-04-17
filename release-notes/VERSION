@@ -23,6 +23,7 @@ No changes since 2.7.0
 #18: Allow use of `@JsonInclude(content=Include.NON_EMPTY)` with `Optional<>`
  (requested by James L)
 
+2.6.6 (05-Apr-2016)
 2.6.5 (19-Jan-2016)
 
 No changes since 2.6.4.

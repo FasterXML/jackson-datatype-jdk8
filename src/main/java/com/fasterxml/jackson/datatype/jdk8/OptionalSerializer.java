@@ -215,7 +215,7 @@ public class OptionalSerializer
         JsonSerializer<Object> ser = _valueSerializer;
         if (ser == null) {
             try {
-                ser = _findCachedSerializer(provider, value.getClass());
+                ser = _findCachedSerializer(provider, contents.getClass());
             } catch (JsonMappingException e) { // nasty but necessary
                 throw new RuntimeJsonMappingException(e);
             }

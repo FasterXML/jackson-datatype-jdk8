@@ -29,6 +29,15 @@ public class OptionalnclusionTest extends ModuleTestBase
         }
     }
 
+    public static final class OptionalGenericData<T> {
+        public Optional<T> myData;
+        public static <T> OptionalGenericData<T> construct(T data) {
+            OptionalGenericData<T> ret = new OptionalGenericData<T>();
+            ret.myData = Optional.of(data);
+            return ret;
+        }
+    }
+
     private final ObjectMapper MAPPER = mapperWithModule();
 
     public void testSerOptNonEmpty() throws Exception
@@ -57,5 +66,41 @@ public class OptionalnclusionTest extends ModuleTestBase
         assertEquals("{}", json);
         json = MAPPER.writeValueAsString(new OptionalNonEmptyStringBean(""));
         assertEquals("{}", json);
+    }
+
+    public void testSerPropInclusionAlways() throws Exception
+    {
+        JsonInclude.Value incl =
+                JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.ALWAYS);
+        ObjectMapper mapper = mapperWithModule().setPropertyInclusion(incl);
+        assertEquals("{\"myData\":true}",
+                mapper.writeValueAsString(OptionalGenericData.construct(Boolean.TRUE)));
+    }
+
+    public void testSerPropInclusionNonNull() throws Exception
+    {
+        JsonInclude.Value incl =
+                JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_NULL);
+        ObjectMapper mapper = mapperWithModule().setPropertyInclusion(incl);
+        assertEquals("{\"myData\":true}",
+                mapper.writeValueAsString(OptionalGenericData.construct(Boolean.TRUE)));
+    }
+
+    public void testSerPropInclusionNonAbsent() throws Exception
+    {
+        JsonInclude.Value incl =
+                JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_ABSENT);
+        ObjectMapper mapper = mapperWithModule().setPropertyInclusion(incl);
+        assertEquals("{\"myData\":true}",
+                mapper.writeValueAsString(OptionalGenericData.construct(Boolean.TRUE)));
+    }
+
+    public void testSerPropInclusionNonEmpty() throws Exception
+    {
+        JsonInclude.Value incl =
+                JsonInclude.Value.construct(JsonInclude.Include.NON_ABSENT, JsonInclude.Include.NON_EMPTY);
+        ObjectMapper mapper = mapperWithModule().setPropertyInclusion(incl);
+        assertEquals("{\"myData\":true}",
+                mapper.writeValueAsString(OptionalGenericData.construct(Boolean.TRUE)));
     }
 }
