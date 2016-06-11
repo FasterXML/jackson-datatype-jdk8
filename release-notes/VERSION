@@ -8,6 +8,10 @@ Project: jackson-datatype-jdk8
 
 No changes since 2.7
 
+2.7.5 (11-Jun-2016)
+
+No changes since 2.7.4
+
 2.7.4 (29-Apr-2016)
 
 #31: Support `@JsonSerialize(contentUsing=)` and `@JsonDeserialize(contentUsing=)`
