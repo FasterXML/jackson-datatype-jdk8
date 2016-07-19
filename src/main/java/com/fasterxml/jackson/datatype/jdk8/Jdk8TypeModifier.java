@@ -27,7 +27,7 @@ public class Jdk8TypeModifier extends TypeModifier
         if (raw == Optional.class) {
             // 19-Oct-2015, tatu: Looks like we may be missing type information occasionally,
             //    perhaps due to raw types.
-            refType = bindings.isEmpty() ? TypeFactory.unknownType() : bindings.getBoundType(0);
+            refType = type.containedTypeOrUnknown(0);
         } else if (raw == OptionalInt.class) {
             refType = typeFactory.constructType(Integer.TYPE);
         } else if (raw == OptionalLong.class) {
