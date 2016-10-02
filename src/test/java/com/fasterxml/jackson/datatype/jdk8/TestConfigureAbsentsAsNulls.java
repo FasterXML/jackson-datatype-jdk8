@@ -52,7 +52,8 @@ public class TestConfigureAbsentsAsNulls extends ModuleTestBase
         mapper.registerModule(new Jdk8Module().configureAbsentsAsNulls(false));
 
         OptionalData data = new OptionalData();
-        String value = mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT).writeValueAsString(data);
+        String value = mapper.setSerializationInclusion(JsonInclude.Include.NON_ABSENT)
+                .writeValueAsString(data);
         assertEquals("{}", value);
     }
 }
