@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.datatype.jdk8;
+package com.fasterxml.jackson.datatype.jdk8.optional;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
 import com.fasterxml.jackson.databind.ser.DefaultSerializerProvider;
+import com.fasterxml.jackson.datatype.jdk8.ModuleTestBase;
 
 public class OptionalUnwrappedTest extends ModuleTestBase
 {

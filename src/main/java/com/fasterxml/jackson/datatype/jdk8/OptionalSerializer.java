@@ -38,11 +38,6 @@ public class OptionalSerializer
             TypeSerializer vts, JsonSerializer<?> valueSer,
             NameTransformer unwrapper)
     {
-        if ((_property == prop)
-                && (_valueTypeSerializer == vts) && (_valueSerializer == valueSer)
-                && (_unwrapper == unwrapper)) {
-            return this;
-        }
         return new OptionalSerializer(this, prop, vts, valueSer, unwrapper,
                 _suppressableValue, _suppressNulls);
     }
@@ -51,10 +46,6 @@ public class OptionalSerializer
     public ReferenceTypeSerializer<Optional<?>> withContentInclusion(Object suppressableValue,
             boolean suppressNulls)
     {
-        if ((_suppressableValue == suppressableValue)
-                && (_suppressNulls == suppressNulls)) {
-            return this;
-        }
         return new OptionalSerializer(this, _property, _valueTypeSerializer,
                 _valueSerializer, _unwrapper,
                 suppressableValue, suppressNulls);

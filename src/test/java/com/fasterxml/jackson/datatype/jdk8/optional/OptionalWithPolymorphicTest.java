@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.datatype.jdk8;
+package com.fasterxml.jackson.datatype.jdk8.optional;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,8 +10,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jdk8.ModuleTestBase;
 
-public class TestOptionalWithPolymorphic extends ModuleTestBase
+public class OptionalWithPolymorphicTest extends ModuleTestBase
 {
     static class ContainerA {
         @JsonProperty private Optional<String> name = Optional.empty();

@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.datatype.jdk8;
+package com.fasterxml.jackson.datatype.jdk8.optional;
 
 import java.io.IOException;
 import java.util.*;
@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
+import com.fasterxml.jackson.datatype.jdk8.ModuleTestBase;
 
 public class OptionalTest extends ModuleTestBase
 {
