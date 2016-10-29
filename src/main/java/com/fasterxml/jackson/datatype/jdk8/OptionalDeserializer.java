@@ -115,7 +115,7 @@ final class OptionalDeserializer
         //   These might actually be handled ok except that nominal type here
         //   is `Optional`, so special handling is not invoked; instead, need
         //   to do a work-around here.
-        // 22-Oct-2015, tatu: Most likely this is actually wrong, result of incorrewct
+        // 22-Oct-2015, tatu: Most likely this is actually wrong, result of incorrect
         //   serialization (up to 2.6, was omitting necessary type info after all);
         //   but safest to leave in place for now
         if (t != null && t.isScalarValue()) {
