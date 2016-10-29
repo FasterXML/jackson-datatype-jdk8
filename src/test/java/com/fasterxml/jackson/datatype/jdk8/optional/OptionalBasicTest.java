@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.datatype.jdk8;
+package com.fasterxml.jackson.datatype.jdk8.optional;
 
 import java.util.*;
 
@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jdk8.ModuleTestBase;
 
 public class OptionalBasicTest extends ModuleTestBase
 {
