@@ -315,6 +315,7 @@ public class OptionalSerializer
             }
             _dynamicSerializers = _dynamicSerializers.newWith(type, ser);
         }
+        ser = (JsonSerializer<Object>)provider.handlePrimaryContextualization(ser, _property);
         return ser;
     }
 
